@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xmlns:mvc="http://www.springframework.org/schema/mvc"
+		xmlns:aop="http://www.springframework.org/schema/aop"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd 
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop.xsd">
+	<!-- 定时类用 -->
+	
+	<!-- quartz更新活动行程信息 -->
+    <!-- quartz执行类 -->
+    <bean id="wdConfigTimer" class="com.yunma.timer.WdConfigTimer"></bean>
+    <!-- quartz任务工厂 -->
+    <bean id="activityRecordJobFactory" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="wdConfigTimer"/>
+		<property name="targetMethod" value="updateTimer"/><!-- 方法名 -->
+		<property name="concurrent" value="false"/>
+	</bean>
+<!-- quartz触发器 -->
+	<bean id="wdConfigTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="activityRecordJobFactory" />
+		</property>
+		<property name="cronExpression">
+		    <!-- 每天凌晨1点执行一次 -->
+			<value>0 0 1 * * ?</value>
+		</property>
+	</bean>	
+</beans>

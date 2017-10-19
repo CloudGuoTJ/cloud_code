@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.couponWd.WdCouponDao">
+
+	<insert id="addCoupon" parameterType="WdCoupon">
+		INSERT INTO tb_coupon_info (
+			vendorId
+			<if test="couponId != null">,couponId</if>
+			<if test="type != null">,type</if>
+			<if test="reduce != null">,reduce</if>
+			<if test="imgUrl != null">,imgUrl</if>
+			<if test="stock != null">,stock</if>
+			<if test="scope != null">,scope</if>
+			<if test="commodityId != null">,commodityId</if>
+			<if test="leastCost != null">,leastCost</if>
+			<if test="dateType != null">,dateType</if>
+			<if test="validLenght != null">,validLenght</if>
+			<if test="beginTimeStr != null">,beginTime</if>
+			<if test="endTimeStr != null">,endTime</if>
+			<if test="explain != null">,explain</if>
+			<if test="status != null">,status</if>
+			<if test="createTime != null">,createTime</if>
+			<if test="gmtCreatedStr != null">,gmtCreated</if>
+			<if test="gmtModifiedStr != null">,gmtModified</if>
+			<if test="title != null">,title</if>
+			<if test="showFlag != null">,showFlag</if>
+			<if test="weidianFetchUrl != null">,weidianFetchUrl</if>
+			<if test="openGet != null">,openGet</if>
+			<if test="deleted != null">,deleted</if>
+			<if test="showFinish != null">,showFinish</if>
+			<if test="userUrl != null">,userUrl</if>
+			<if test="buyerLimit != null">,buyerLimit</if>
+			<if test="count != null">,count</if>
+			,createTime
+		) VALUE (
+			#{vendorId}
+			<if test="couponId != null">,#{couponId}</if>
+			<if test="type != null">,#{type}</if>
+			<if test="reduce != null">,#{reduce}</if>
+			<if test="imgUrl != null">,#{imgUrl}</if>
+			<if test="stock != null">,#{stock}</if>
+			<if test="scope != null">,#{scope}</if>
+			<if test="commodityId != null">,#{commodityId}</if>
+			<if test="leastCost != null">,#{leastCost}</if>
+			<if test="dateType != null">,#{dateType}</if>
+			<if test="validLenght != null">,#{validLenght}</if>
+			<if test="beginTimeStr != null">,#{beginTimeStr}</if>
+			<if test="endTimeStr != null">,#{endTimeStr}</if>
+			<if test="explain != null">,#{explain}</if>
+			<if test="status != null">,#{status}</if>
+			<if test="createTime != null">,#{createTime}</if>
+			<if test="gmtCreatedStr != null">,#{gmtCreatedStr}</if>
+			<if test="gmtModifiedStr != null">,#{gmtModifiedStr}</if>
+			<if test="title != null">,#{title}</if>
+			<if test="showFlag != null">,#{showFlag}</if>
+			<if test="weidianFetchUrl != null">,#{weidianFetchUrl}</if>
+			<if test="openGet != null">,#{openGet}</if>
+			<if test="deleted != null">,#{deleted}</if>
+			<if test="showFinish != null">,#{showFinish}</if>
+			<if test="userUrl != null">,#{userUrl}</if>
+			<if test="buyerLimit != null">,#{buyerLimit}</if>
+			<if test="count != null">,#{count}</if>
+			,now()
+		)
+		
+		
+	</insert>
+	
+	<select id="getCouponCount" parameterType="Integer" resultType="Integer">
+		SELECT count(*) FROM tb_coupon_info WHERE vendorId = #{vendorId}
+	</select>
+	
+	<select id="getCouponWxCount" parameterType="Integer" resultType="Integer">
+		SELECT COUNT(*) FROM tb_coupon_info_wx WHERE vendor_id = #{vendorId}
+	</select>
+	
+	<select id="findCouponInfo" parameterType="map" resultType="wdCoupon">
+		<!-- SELECT 
+		couponId,title,type,vendorId,stock,count,beginTime,endTime,reduce,leastCost,buyerLimit
+		FROM
+		 tb_coupon_info 
+		WHERE 
+		vendorId = #{vendorId}		
+		ORDER BY 
+		couponId DESC 
+		LIMIT #{pageBean.index},#{pageBean.pageSize} -->
+		SELECT 
+			couponId,title,'2' type,vendorId,stock,COUNT,createTime,beginTime,endTime,reduce,leastCost,buyerLimit
+		FROM
+			tb_coupon_info 
+		WHERE 
+			vendorId = #{vendorId}
+		UNION
+		SELECT 
+			coupon_stock_id,coupon_name,'1' type,vendor_id vendorId,coupon_total-is_send_num stock,coupon_total COUNT,createTime,begin_time beginTime,end_time endTime,coupon_value reduce,coupon_mininumn leastCost,max_quota buyerLimit
+		FROM 
+			tb_coupon_info_wx
+		WHERE 
+			vendor_id = #{vendorId}
+		ORDER BY 
+			createTime DESC
+		LIMIT #{pageBean.index},#{pageBean.pageSize}
+	</select>
+	
+	<select id="getWdCouponListByVendor" parameterType="Integer" resultType="WdCoupon">
+		SELECT * FROM tb_coupon_info WHERE vendorId = #{vendorId}
+	</select>
+	
+	<select id="getWdCouponAll" resultType="Coupon">
+		SELECT couponId ,title couponName,beginTime beginTime,endTime endTime,leastCost,
+		reduce money,stock couponTotal,weidianFetchUrl weidianFetchUrl,vendorId ,count stockCount,2 as style
+		FROM tb_coupon_info
+		WHERE status=1 
+		<if test="vendorId != null and vendorId != ''">
+		AND vendorId = #{vendorId} 
+		</if>
+		<![CDATA[
+			AND beginTime <= #{currTimeStr} AND endTime >= #{currTimeStr}
+		]]>
+	</select>
+	
+	<select id="getWdCouponAllOther" resultType="Coupon">
+		SELECT couponId ,title couponName,beginTime beginTime,endTime endTime,leastCost,
+		reduce money,stock couponTotal,weidianFetchUrl weidianFetchUrl,vendorId ,count stockCount,2 as style
+		FROM tb_coupon_info
+		WHERE status=1 AND vendorId != #{vendorId}
+		<![CDATA[
+			AND beginTime <= #{currTimeStr} AND endTime >= #{currTimeStr}
+		]]>
+	</select>
+	
+	<select id="getCouponByCouponId" parameterType="String" resultType="Coupon">
+		SELECT couponId ,title couponName,beginTime beginTime,endTime endTime,leastCost,
+		reduce money,stock couponTotal,weidianFetchUrl weidianFetchUrl,vendorId ,count stockCount,2 as style
+		FROM tb_coupon_info
+		WHERE status=1 AND couponId = #{couponId}
+	</select>
+	
+	<select id="hasCoupon" parameterType="integer" resultType="int">
+		SELECT COUNT(*) FROM tb_coupon_info WHERE vendorId = #{vendorId}
+	</select>
+	
+	<delete id="deleteCoupon" parameterType="integer">
+		DELETE FROM tb_coupon_info WHERE couponId = #{id}
+	</delete>
+</mapper>

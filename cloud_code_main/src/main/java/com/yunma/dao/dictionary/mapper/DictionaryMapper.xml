@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.dictionary.DictionaryDao">
+
+	<select id="getDictionaryByItemName" parameterType="String" resultType="DictionaryVo">
+		SELECT g.id groupId,g.group_code groupCode,g.group_name groupName,g.remake groupRemake,
+			i.id itemId,i.item_sort itemSort,i.item_name itemName,i.remake itemRemake
+		FROM tb_dictionary_item i LEFT JOIN tb_dictionary_group g 
+		ON i.group_id = g.id 
+		WHERE i.item_name = #{itemName}
+	</select>
+</mapper>

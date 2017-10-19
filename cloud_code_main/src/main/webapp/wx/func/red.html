@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+	<title>红包</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		.red {
+			width: 100vw;
+		}
+		.red img {
+			width: 100%;
+		}
+		.scanInfo{
+			position: absolute;
+			top: 48vh;
+			left: 13vw;
+			width: 80vw;
+			font-size: 14px;
+			height: 34px;
+			line-height: 17px;
+			text-align: left;
+			border: hidden;
+		}
+
+		.moneyDiv {
+			color: #e21713;
+			min-width: 20vw;
+			font-size: 10vw;
+			position: absolute;
+		    top: 61vh;
+    		left: 35vw;
+		}
+
+		.button {
+			font-size: 5.2vw;
+			font-weight: bold;
+			text-align: center;
+			height: 10vw;
+			line-height: 10vw;
+			width: 40vw;
+			background: #FF5400;
+			color: #fff;
+			border-radius: 4px;
+			position: absolute;
+			top: 70vh;
+			left: 50vw;
+			margin-left: -20vw;
+		}
+        .ma{
+            position: relative;
+            top: 10vh;
+            left: 10vw;
+        }
+        .huibtn{
+        	background: #9c9c9c;
+        }
+	</style>
+</head>
+<body>
+	<div class="red">
+		<img src="img/maBG.jpg">
+	</div>
+	<!-- 金额 -->
+	<div class="moneyDiv">
+		<span>￥<span id="money">0.00</span></span>
+	</div>
+	<!-- 领取按钮 -->
+	<div class="button">
+		<span id="btnTxt">立即领取</span>
+	</div>
+</body>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js" type="text/javascript" charset="utf-8"></script>
+<script>
+(function () {
+		var _937 = {
+			// 初始化
+			init: function () {
+				this.testArea=/(深圳)|(广州)|(东莞)|(佛山)|(贵州)/;
+				this.disable=false;
+				this.openId = localStorage.getItem('openId');
+				this.securityCode = localStorage.getItem('securityCode');
+				this.orderId = localStorage.getItem('orderId');
+				this.securityCodeId = localStorage.getItem('securityCodeId');
+				this.latitude = '';
+				this.longitude = '';
+				this.wechatHome();
+			},
+			// 绑定领取红包
+			bindEvents: function () {
+                var self = this;
+                $('#btnTxt').on('click', function () {
+                    self.getMoney();
+                })
+            },
+			// 获取金额
+			wechatHome: function () {
+			var self = this;
+			console.log(self.securityCode,self.openId);
+				$.ajax({
+					url: 'http://project.ym-b.top/cloud_code/GET/redEnv/openRedEnv.do',
+					data: {
+						openId: self.openId,
+						orderId: self.orderId,
+						securityCodeId: self.securityCodeId
+					},
+					type: 'GET',
+					dataType: 'json',
+					success: function (res) {
+						console.log(res);
+						self.renderPage(res);
+					},
+					error: function (err) {
+					$('.button').addClass('huibtn');
+						alert(JSON.stringify(err));
+					}
+				})
+			},
+			// 渲染页面
+			renderPage: function (data) {
+				var self = this;
+				if (data.statuscode==1) {
+					$('#money').html(data.money);
+					self.bindEvents();
+				}
+				else {
+					$('.button').addClass('huibtn');
+					alert(data.msg);
+					$('#btnTxt').on('click', function () {
+                    	alert('领取失败')})
+				return}
+			},
+			// 领取红包
+			getMoney: function () {
+				var self = this;
+				var url = 'http://project.ym-b.top/cloud_code/GET/redEnv/getRedEnv.do'
+				var data = {
+					openId: self.openId,
+					orderId: self.orderId,
+					securityCodeId:self.securityCodeId
+				}
+				$.ajax({
+					url: url,
+					data: {
+						openId: self.openId,
+						orderId: self.orderId,
+						securityCodeId: self.securityCodeId
+					},
+					type: 'GET',
+					dataType: 'json',
+					success: function (res) {
+						self.wallet(res)
+					}
+				})
+			},
+			// 余额
+			wallet: function(res){
+				if(res.statuscode==1){
+					alert('恭喜中奖，领取成功');
+					window.location.href = 'yue.html'
+				}
+				else{
+					alert(res.msg);
+					$('.button').addClass('huibtn');
+					$('#btnTxt').on('click', function () {
+                    	alert('领取失败')})
+			}
+		}
+	}
+		_937.init()
+	})()
+</script>
+</html>

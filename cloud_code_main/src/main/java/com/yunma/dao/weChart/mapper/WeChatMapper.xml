@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.weChart.WeChatDao">
+
+	<insert id="addWeChatUserInfo" parameterType="WeChatUser">
+		INSERT INTO tb_wx_user (
+			openId
+			<if test="longitude != null">,longitude</if>
+			<if test="latitude != null">,latitude</if>
+			<if test="address != null">,address</if>
+			<if test="province != null">,province</if>
+			<if test="city != null">,city</if>
+			<if test="district != null">,district</if>
+			<if test="createDate != null">,createDate</if>
+			<if test="deleteFlag != null">,deleteFlag</if>
+			<if test="scanUser != null">,scanUser</if>
+			<if test="nickName != null">,nickName</if>
+			<if test="integral != null">,integral</if>
+			<if test="wxAddress != null">,wxAddress</if>
+			<if test="scanSource != null">,scanSource</if>
+			<if test="headImgurl != null">,headImgurl</if>
+			<if test="sex != null">,sex</if>
+			<if test="remark != null">,remark</if>
+		) VALUE (
+			#{openId}
+			<if test="longitude != null">,#{longitude}</if>
+			<if test="latitude != null">,#{latitude}</if>
+			<if test="address != null">,#{address}</if>
+			<if test="province != null">,#{province}</if>
+			<if test="city != null">,#{city}</if>
+			<if test="district != null">,#{district}</if>
+			<if test="createDate != null">,#{createDate}</if>
+			<if test="deleteFlag != null">,#{deleteFlag}</if>
+			<if test="scanUser != null">,#{scanUser}</if>
+			<if test="nickName != null">,#{nickName}</if>
+			<if test="integral != null">,#{integral}</if>
+			<if test="wxAddress != null">,#{wxAddress}</if>
+			<if test="scanSource != null">,#{scanSource}</if>
+			<if test="headImgurl != null">,#{headImgurl}</if>
+			<if test="sex != null">,#{sex}</if>
+			<if test="remark != null">,#{remark}</if>
+		)
+	</insert>
+	
+	<update id="updateWeChatUserInfo" parameterType="WeChatUser">
+		UPDATE tb_wx_user
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="longitude != null">longitude = #{longitude}</if>
+			<if test="latitude != null">,latitude = #{latitude}</if>
+			<if test="address != null">,address = #{address}</if>
+			<if test="province != null">,province = #{province}</if>
+			<if test="city != null">,city = #{city}</if>
+			<if test="district != null">,district = #{district}</if>
+			<if test="createDate != null">,createDate = #{createDate}</if>
+			<if test="deleteFlag != null">,deleteFlag = #{deleteFlag}</if>
+			<if test="scanUser != null">,scanUser = #{scanUser}</if>
+			<if test="nickName != null">,nickName = #{nickName}</if>
+			<if test="integral != null">,integral = #{integral}</if>
+			<if test="wxAddress != null">,wxAddress = #{wxAddress}</if>
+			<if test="scanSource != null">,scanSource = #{scanSource}</if>
+			<if test="headImgurl != null">,headImgurl = #{headImgurl}</if>
+			<if test="sex != null">,sex = #{sex}</if>
+			<if test="remark != null">,remark = #{remark}</if>
+		</trim>
+		WHERE openId = #{openId}
+	</update>
+	
+	<select id="hasWeChatUserInfo" parameterType="String" resultType="int">
+		SELECT count(*) FROM tb_wx_user WHERE openId = #{openId}
+	</select>
+	
+	<insert id="addWeChatUserWallet" parameterType="String">
+		INSERT INTO tb_wx_user_wallet(open_id,money) VALUE (#{openId},0)
+	</insert>
+	
+	<select id="getWalletByOpenId" parameterType="String" resultType="WeChatUserWallet">
+		SELECT 
+			id,open_id openId,money,last_update_time lastUpdateTime 
+		FROM
+			tb_wx_user_wallet
+		WHERE 
+			open_id = #{openId}
+	</select>
+	
+	<update id="updateWalletById" parameterType="WeChatUserWallet">
+		UPDATE tb_wx_user_wallet
+		SET
+			money = #{money},
+			last_update_time = #{lastUpdateTime}
+		WHERE 
+			open_id = #{openId}
+	</update>
+	
+	<insert id="addWeChatUserRecord" parameterType="WeChatUserWallet">
+		INSERT INTO tb_wx_user_wallet_record (open_id,change_money,time) 
+		VALUE (#{openId},#{money},now()) 
+	</insert>
+	
+	<select id="findUserCount" resultType="int">
+		SELECT COUNT(*) FROM tb_wx_user;
+	</select>
+	
+	<select id="getIncreaseVipCount"  parameterType="Integer"  resultType="int">
+		SELECT count(*) 
+		FROM 
+		tb_
+		WHERE 
+		(TO_DAYS( NOW( ) ) - TO_DAYS( createDate) <![CDATA[<=]]>1)	
+	</select>
+
+</mapper>

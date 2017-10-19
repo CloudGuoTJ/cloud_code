@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.wxConfig.WxConfigDao">
+	
+	
+	<insert id="addWxGzh" parameterType="WxConfigGzhVo">
+		
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+		
+			SELECT LAST_INSERT_ID() AS id
+			
+		</selectKey>
+		INSERT INTO tb_wx_config (
+			 vendorId
+			<if test="gzhName != null">,gzhName</if>
+			<if test="gzhAccount != null">,gzhAccount</if>
+			<if test="gzhId != null">,gzhId</if>
+			<if test="gzhMark != null">,gzhMark</if>
+			<if test="gzhType != null">,gzhType</if>
+			<if test="appid != null">,appid</if>
+			<if test="appsecret != null">,appsecret</if>
+			<if test="wxQrCodePath != null">,wxQrCodePath</if>
+			<if test="gzhHeadImg != null">,gzhHeadImg</if>
+			<if test="shortUrl != null">,shortUrl</if>
+			<if test="wxKey != null">,wxKey</if>
+			,createTime
+			<if test="token != null">,token</if>
+		)value(
+			#{vendorId}
+			<if test="gzhName != null">,#{gzhName}</if>
+			<if test="gzhAccount != null">,#{gzhAccount}</if>
+			<if test="gzhId != null">,#{gzhId}</if>
+			<if test="gzhMark != null">,#{gzhMark}</if>
+			<if test="gzhType != null">,#{gzhType}</if>
+			<if test="appid != null">,#{appid}</if>
+			<if test="appsecret != null">,#{appsecret}</if>
+			<if test="wxQrCodePath != null">,#{wxQrCodePath}</if>
+			<if test="gzhHeadImg != null">,#{gzhHeadImg}</if>
+			<if test="shortUrl != null">,#{shortUrl}</if>
+			<if test="wxKey != null">,#{wxKey}</if>
+			,now()
+			<if test="token != null">,#{token}</if>
+		
+		)
+	
+	</insert>
+	
+	
+	<update id="updateWxGzhInfo" parameterType="WxConfigGzhVo">
+		update tb_wx_config
+	 <trim prefix="SET" suffixOverrides=",">
+		  <if test="shortUrl != null">shortUrl=#{shortUrl},</if>
+		  <if test="wxKey !=null" >wxKey=#{wxKey},</if>
+		  <if test="token !=null">token=#{token},</if>
+		  updateTime=now()
+ 	 </trim>
+ 		  where id =#{id}
+	
+	</update>
+	
+	
+	<update id="addWxGzhInfo" parameterType="WxConfigGzhVo">
+		update tb_wx_config
+	 <trim prefix="SET" suffixOverrides=",">
+		  <if test="gzhName != null">gzhName=#{gzhName}</if>
+			<if test="gzhAccount != null">,gzhAccount=#{gzhAccount}</if>
+			<if test="gzhId != null">,gzhId=#{gzhId}</if>
+			<if test="gzhMark != null">,gzhMark=#{gzhMark}</if>
+			<if test="gzhType != null">,gzhType=#{gzhType}</if>
+			<if test="appid != null">,appid=#{appid}</if>
+			<if test="appsecret != null">,appsecret=#{appsecret}</if>
+			<if test="wxQrCodePath != null">,wxQrCodePath=#{wxQrCodePath}</if>
+			<if test="gzhHeadImg != null">,gzhHeadImg=#{gzhHeadImg}</if>
+			<if test="shortUrl != null">,shortUrl=#{shortUrl}</if>
+			<if test="wxKey != null">,wxKey=#{wxKey}</if>
+			,updateTime=now()
+			<if test="token != null">,token=#{token}</if>
+ 	 </trim>
+ 		  where vendorId =#{vendorId}
+	
+	</update>
+	
+	<select id="getWxGzhInfo" resultType="WxConfigGzhVo" parameterType="Integer">
+		select * from `tb_wx_config` where vendorId = #{vendorId}
+	</select>
+	
+	
+	<select id="getAllWxGzhInfo" resultType="WxConfigGzhVo" parameterType="map">
+		select * from `tb_wx_config` where deleteFlag = 0 
+		<if test="pageBean.pageSize != 0">
+			LIMIT #{pageBean.index},#{pageBean.pageSize}
+		</if>
+	</select>
+	
+</mapper>

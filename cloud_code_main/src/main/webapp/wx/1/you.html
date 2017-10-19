@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			img{
+				width: 100%;
+			}
+			body{
+				background: url(img/png_dalibao.jpg) no-repeat;
+				background-size:103% 93%;
+			}
+			.all{
+				width: 100vw;
+				height: 66vh;
+				margin-top:71% ;
+			}
+			.red {
+				position: absolute;
+				top: 21%;
+				left: 0%;
+			}
+			.prompt{
+				
+			}
+			.prompt h3{
+				height: 5vh;
+				font-size: 4.5vw;
+				text-align: center;
+				color: #CE131B;
+				line-height: 5vh;
+			}
+			.m_left{
+				width: 74.5vw;
+				padding: 0;
+				margin: 0;
+			}
+			.m_right{
+				width: 25vw;
+				padding: 0;
+				margin: 0;
+				margin-left: -0.5vw;
+				margin-top: 0.5vh;
+			}
+    </style>
+</head>
+
+<body>
+<img class="red" src="img/youred.jpg" onclick="nsk()"/>
+		<div class="all" id="all">
+			<div class="prompt">
+				<h3>只能选择一张优惠券</h3>
+			</div>
+			<div id="movie1" class="movie1" onclick="dq()">
+				<img class="m_left" src="img/png_11.png"/>
+				<img class="m_right" src="img/shiyong.png"/>
+			</div>
+			<div id="movie2" class="movie2" onclick="jdw()">
+				<img class="m_left" src="img/png_22.png"/>
+				<img class="m_right" src="img/shiyong.png"/>
+			</div>
+			<div id="movie3" class="movie3" onclick="htgy()">
+				<img class="m_left" src="img/youf.png"/>
+				<img class="m_right" src="img/shiyong.png"/>
+			</div>
+		</div>
+</body>
+<script src="../js/zepto_1.1.3.min.js"></script>
+<script>
+function nsk() {
+	window.location.href="http://www.hnxtc.com.cn";
+}
+function dq() {
+	window.location.href="https://mall.jd.com/index-602857.html";
+}
+function jdw() {
+	window.location.href="https://mall.jd.com/index-1000008814.html";
+}
+function htgy() {
+	window.location.href="https://mall.jd.com/index-32626.html";
+}
+</script>
+
+</html>

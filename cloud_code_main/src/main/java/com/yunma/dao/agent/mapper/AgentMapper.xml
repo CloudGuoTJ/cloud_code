@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.agent.AgentDao">
+
+	<insert id="addAgentInfo" parameterType="AgentEntity">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into tb_vendor_agent (
+			<if test="vendorId !=null">vendorId</if>
+			<if test="agentName !=null">,agentName</if>
+			<if test="agentFid !=null">,agentFid</if>
+			<if test="productId !=null">,productId</if>
+			<if test="agentTel !=null">,agentTel</if>
+			<if test="agentEmaill !=null">,agentEmaill</if>
+			<if test="agentAddress !=null">,agentAddress</if>
+			<if test="businessLicence !=null">,businessLicence</if>
+			<if test="agentAuthorize !=null">,agentAuthorize</if>
+			<if test="agentLevel !=null">,agentLevel</if>
+			<if test="mark !=null">,mark</if>
+		)value(
+			<if test="vendorId !=null">#{vendorId}</if>
+			<if test="agentName !=null">,#{agentName}</if>
+			<if test="agentFid !=null">,#{agentFid}</if>
+			<if test="productId !=null">,#{productId}</if>
+			<if test="agentTel !=null">,#{agentTel}</if>
+			<if test="agentEmaill !=null">,#{agentEmaill}</if>
+			<if test="agentAddress !=null">,#{agentAddress}</if>
+			<if test="businessLicence !=null">,#{businessLicence}</if>
+			<if test="agentAuthorize !=null">,#{agentAuthorize}</if>
+			<if test="agentLevel !=null">,#{agentLevel}</if>
+			<if test="mark !=null">,#{mark}</if>
+		)
+	</insert>
+	
+	<update id="updateAgentInfo" parameterType="AgentEntity">
+		update tb_vendor_agent 
+		<trim prefix="SET" suffixOverrides=",">
+		  <if test="vendorId != null">vendorId=#{vendorId}</if>
+		  <if test="agentFid != null">,agentFid=#{agentFid}</if>
+		  <if test="productId != null">,productId=#{productId}</if>
+		  <if test="agentTel != null">,agentTel=#{agentTel}</if>
+		  <if test="agentEmaill != null">,agentEmaill=#{agentEmaill}</if>
+		  <if test="agentAddress != null">,agentAddress=#{agentAddress}</if>
+		  <if test="businessLicence != null">,businessLicence=#{businessLicence}</if>
+		  <if test="agentAuthorize != null">,agentAuthorize=#{agentAuthorize}</if>
+		  <if test="agentLevel != null">,agentLevel=#{agentLevel}</if>
+		  <if test="mark != null">,mark=#{mark}</if>
+		</trim>
+		where id=#{id}
+	</update>
+	
+	
+	<select id="getAgentTree" parameterType="Integer" resultType="AgentEntity">
+		select * from tb_vendor_agent where vendorId=#{vendorId}
+	</select>
+	
+	<delete id="deleteAgentNode" parameterType="Integer">
+		DELETE FROM tb_vendor_agent WHERE id=#{id}
+	</delete>
+	
+	<select id="getCountAgent" parameterType="Integer" resultType="Integer">
+		SELECT COUNT(*) FROM tb_vendor_agent WHERE vendorId=#{vendorId}
+	</select>
+	
+	<select id="getAllAgent" parameterType="map" resultType="AgentEntity">
+		SELECT id,agentName,vendorId,agentFid,productId,
+		agentTel,agentEmaill,agentAddress,businessLicence,
+		agentAuthorize,agentLevel,agentFirstChilId,
+		broAgentId,mark
+		FROM tb_vendor_agent 
+		WHERE vendorId=#{vendorId} 
+		ORDER BY id ASC 
+		<if test="pageBean.pageSize != 0">
+		LIMIT #{pageBean.index},#{pageBean.pageSize}
+		</if>
+	</select>
+	
+	<select id="getAgentInfoById" parameterType="Integer" resultType="AgentEntity">
+		select * from tb_vendor_agent where id=#{id}
+	</select>
+	
+	<select id="getLogisticCodeByAgentId" parameterType="Integer" resultType="LogisticCode">
+		SELECT * from tb_logistic_code WHERE agentId=#{agentId} 
+	</select>
+	
+	<select id="getAgentLogisticCodeByCode" parameterType="String" resultType="LogisticCode">
+		SELECT * from tb_logistic_code WHERE logisticCode=#{logisticCode}
+	</select>
+	
+	<insert id="addLogisticCodeScan" parameterType="LogisticCodeScan">
+		INSERT INTO `tb_logistic_code_scan` (
+		<if test="openId !=null">openId</if>
+		<if test="logisticCode !=null">,logisticCode</if>
+		<if test="scanTime !=null">,scanTime</if>
+		<if test="logisticCodeId !=null">,logisticCodeId</if>
+		<if test="lvCount !=null">,lvCount</if>
+		<if test="agentId !=null">,agentId</if>
+		) VALUE (
+		<if test="openId !=null">#{openId}</if>
+		<if test="logisticCode !=null">,#{logisticCode}</if>
+		<if test="scanTime !=null">,#{scanTime}</if>
+		<if test="logisticCodeId !=null">,#{logisticCodeId}</if>
+		<if test="lvCount !=null">,#{lvCount}</if>
+		<if test="agentId !=null">,#{agentId}</if>
+		)
+	</insert>
+	
+	<select id="getLogisticIdMax" resultType="Integer">
+		select max(logisticId) from tb_logistic_code
+	</select>
+	
+	<select id="getAllAgentName" parameterType="Integer" resultType="AgentEntity">
+		SELECT * FROM tb_vendor_agent WHERE vendorId=#{vendorId}
+	</select>
+	
+</mapper>

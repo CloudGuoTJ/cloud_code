@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd 
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop.xsd
+		">
+
+	<context:property-placeholder location="classpath:config.properties" />
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${driverClassName}" />
+		<property name="url" value="${jdbc_url}" />
+		<property name="password" value="${jdbc_password}" />
+		<property name="username" value="${jdbc_username}" />
+	</bean>
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- 自动扫描entity目录, 省掉Configuration.xml里的手工配置 -->
+		<property name="mapperLocations" value="classpath:com/yunma/dao/*/mapper/*.xml" />
+		<!-- 给扫描包下面所有对象定义别名(就是类首字母小写) -->
+		<property name="typeAliasesPackage" value="com.yunma" />
+	</bean>
+
+
+
+	<!-- 配置生成接口代理类 -->
+	<bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.yunma.dao" />
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="mappingJacksonHttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="mappingJacksonHttpMessageConverter"
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>text/html;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 以驱动的形式管理事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!-- 配置memcached服务器 -->
+	<bean id="memcachedClient"
+		class="net.rubyeye.xmemcached.utils.XMemcachedClientFactoryBean"
+		destroy-method="shutdown">
+		<property name="servers">
+			<value>${memcached.server}</value>
+		</property>
+	</bean>
+
+	<!-- 把切面类交由Spring容器来管理 -->
+	<!-- <bean id="secutrityCodeAspect" class="com.yunma.aspect.SecutrityCodeAspect"/> -->
+
+
+
+	<!-- 启用spring对AspectJ注解的支持 -->
+
+	<!-- 开启aop切面异常处理 -->
+
+	<!-- 开启注解扫描 -->
+ 	<!-- <context:component-scan base-package="com.yunma.aspect"></context:component-scan> -->
+	<!-- 开启aop注解方式,默认为false  -->
+	<!-- <aop:aspectj-autoproxy></aop:aspectj-autoproxy>-->
+
+	<!-- <aop:aspectj-autoproxy/> -->
+
+	<!-- 以包扫描方式将需要管理的对象纳入到spring容器管理 -->
+	<context:component-scan base-package="com" />
+
+	<bean id="apiConfig" class="com.github.sd4324530.fastweixin.api.config.ApiConfig">
+		<constructor-arg name="appid" value="wx2247791bde684872" />
+		<constructor-arg name="secret"
+			value="7aee8a2fea17dd54dbad4235d5680090" />
+	</bean>
+
+</beans>

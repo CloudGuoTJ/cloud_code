@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.agent.AgentEmployeeDao">
+	<insert id="addEmpLoyee" parameterType="AgentEmployee">
+		INSERT INTO `tb_agent_employee`(
+			<if test="vendorId !=null">vendorId</if>
+			<if test="agentId !=null">,agentId</if>
+			<if test="empName !=null">,empName</if>
+			<if test="productId !=null">,productId</if>
+			<if test="workNum !=null">,workNum</if>
+			<if test="empTel">,empTel</if>
+			<if test="empIdcard">,empIdcard</if>
+			<if test="empLevel">,empLevel</if>
+			<if test="openId">,openId</if>
+			<if test="longitude">,longitude</if>
+			<if test="latitude">,latitude</if>
+			,createTime
+		)VALUE (
+			<if test="vendorId !=null">#{vendorId}</if>
+			<if test="agentId !=null">,#{agentId}</if>
+			<if test="empName !=null">,#{empName}</if>
+			<if test="productId !=null">,#{productId}</if>
+			<if test="workNum !=null">,#{workNum}</if>
+			<if test="empTel">,#{empTel}</if>
+			<if test="empIdcard">,#{empIdcard}</if>
+			<if test="empLevel">,#{empLevel}</if>
+			<if test="openId">,#{openId}</if>
+			<if test="longitude">,#{longitude}</if>
+			<if test="latitude">,#{latitude}</if>
+			,NOW()
+		)
+	</insert>
+	
+	<update id="updateEmpInfo" parameterType="AgentEmployee">
+		update tb_agent_employee
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="agentId !=null">agentId=#{agentId}</if>
+			<if test="empName !=null">,empName=#{empName}</if>
+			<if test="productId !=null">,productId=#{productId}</if>
+			<if test="workNum !=null">,workNum=#{workNum}</if>
+			<if test="empTel !=null">,empTel=#{empTel}</if>
+			<if test="empIdcard !=null">,empIdcard=#{empIdcard}</if>
+			<if test="empLevel !=null">,empLevel=#{empLevel}</if>
+			,createTime=NOW()
+		</trim>
+		where id=#{id}
+	
+	</update>
+
+	<select id="hasEmpInfo" parameterType="String" resultType="Integer">
+		SELECT count(*) FROM tb_agent_employee WHERE openId = #{openId}
+	</select>
+	
+	<select id="getOpenIdFromEmp" parameterType="String" resultType="Integer">
+		SELECT vendorId FROM tb_agent_employee WHERE openId = #{openId}
+	</select>
+	
+	<select id="getEmpInfoById" parameterType="Integer" resultType="AgentEmployeeVo">
+		SELECT e.id,e.agentId,a.agentName,e.empName,e.createTime,e.workNum,e.empTel,e.empIdcard 
+		FROM tb_agent_employee e LEFT JOIN `tb_vendor_agent` a ON e.agentId=a.id WHERE e.agentId=#{agentId}
+	</select>
+	
+	<delete id="deleteAgentEmpById" parameterType="Integer">
+		DELETE FROM tb_agent_employee WHERE agentId=#{agentId}
+	</delete>
+	
+	<delete id="deleteAgentEmp" parameterType="Integer">
+		DELETE FROM tb_agent_employee WHERE id=#{empId}
+	</delete>
+	
+</mapper>

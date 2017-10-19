@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.couponWechat.WeChatCouponReceiveRecordDao">
+
+	<select id="getRecordByTime" parameterType="WeChatCouponReceiveRecordVo" resultType="WeChatCouponReceiveRecordVo">
+		SELECT r.id id,c.app_id appId,c.mch_id mchId,c.api_key apiKey,r.coupon_id couponId,r.openid,r.create_time createTime,r.vendor_id vendorId,w.coupon_name couponName,w.coupon_value reduce,w.coupon_mininumn leastCost,r.coupon_stock_id couponStockId
+		FROM tb_coupon_wx_receive_record r 
+		LEFT JOIN tb_coupon_wx_config c ON r.vendor_id = c.vendor_id
+		LEFT JOIN tb_coupon_info_wx w ON r.coupon_stock_id = w.coupon_stock_id
+		WHERE r.vendor_id = #{vendorId}
+		<![CDATA[AND #{startTime} <= DATE_FORMAT(r.create_time,'%Y-%m-%d') AND DATE_FORMAT(r.create_time,'%Y-%m-%d') <= #{endTime}]]>
+	</select>
+	
+	<select id="hasCouponOrder" parameterType="WeChatCouponOrder" resultType="int">
+		SELECT COUNT(*) FROM tb_coupon_wx_order WHERE wx_order_id = #{wx_order_id}
+	</select>
+	
+	<insert id="addCouponOrder" parameterType="WeChatCouponOrder">
+		INSERT INTO tb_coupon_wx_order 
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="pay_time_str != null and pay_time_str != ''">pay_time = #{pay_time_str},</if>
+			<if test="appid != null and appid != ''">appid = #{appid},</if>
+			<if test="mchid != null and mchid != ''">mchid = #{mchid},</if>
+			<if test="special_mchid != null and special_mchid != ''">special_mchid = #{special_mchid},</if>
+			<if test="device_id != null and device_id != ''">device_id = #{device_id},</if>
+			<if test="wx_order_id != null and wx_order_id != ''">wx_order_id = #{wx_order_id},</if>
+			<if test="order_id != null and order_id != ''">order_id = #{order_id},</if>
+			<if test="openid != null and openid != ''">openid = #{openid},</if>
+			<if test="pay_type != null and pay_type != ''">pay_type = #{pay_type},</if>
+			<if test="pay_status != null and pay_status != ''">pay_status = #{pay_status},</if>
+			<if test="pay_status != null and pay_status != ''">pay_bank = #{pay_bank},</if>
+			<if test="money_type != null and money_type != ''">money_type = #{money_type},</if>
+			<if test="order_money != null and order_money != ''">order_money = #{order_money},</if>
+			<if test="coupon_money != null and coupon_money != ''">coupon_money = #{coupon_money},</if>
+			<if test="wx_refund_id != null and wx_refund_id != ''">wx_refund_id = #{wx_refund_id},</if>
+			<if test="refund_id != null and refund_id != ''">refund_id = #{refund_id},</if>
+			<if test="refund_money != null and refund_money != ''">refund_money = #{refund_money},</if>
+			<if test="recharge_refund_coupon_money != null and recharge_refund_coupon_money != ''">recharge_refund_coupon_money = #{recharge_refund_coupon_money},</if>
+			<if test="refund_type != null and refund_type != ''">refund_type = #{refund_type},</if>
+			<if test="refund_status != null and refund_status != ''">refund_status = #{refund_status},</if>
+			<if test="goods_name != null and goods_name != ''">goods_name = #{goods_name},</if>
+			<if test="data_package != null and data_package != ''">data_package = #{data_package},</if>
+			<if test="handling_fee != null and handling_fee != ''">handling_fee = #{handling_fee},</if>
+			<if test="rate != null and rate != ''">rate = #{rate},</if>
+			<if test="order_money_1 != null and order_money_1 != ''">order_money_1 = #{order_money_1}</if>
+		</trim>
+	</insert>
+	
+	<select id="getValidCoupon" resultType="WxCoupon">
+		SELECT *
+ 		FROM `tb_coupon_info_wx` WHERE vendor_id=#{vendorId} <![CDATA[AND begin_time <= #{endTime} AND end_time >= #{startTime}]]>
+	</select>
+	
+	<insert id="addOrderCount" parameterType="WeChatCouponOrderCount">
+		INSERT INTO tb_coupon_wx_order_count SET order_id=#{orderId},vendor_id=#{vendorId},goods_name=#{goodsName},wx_order_id=#{wxOrderId},openid=#{openId},coupon_id=#{couponId},coupon_name=#{couponName},reduce=#{reduce},leastCost=#{leastCost},order_money_1=#{order_money_1},pay_time=#{payTimeStr},update_time=now()
+	</insert>
+	
+	<select id="hasOrderCount" parameterType="String" resultType="int">
+		SELECT count(*) FROM tb_coupon_wx_order_count WHERE wx_order_id = #{wxOrderId}
+	</select>
+	
+	<select id="getOrderCount" resultType="int">
+		SELECT COUNT(*) FROM tb_coupon_wx_order_count
+	</select>
+	
+	<select id="getOrderCountInfo" parameterType="PageBean" resultType="WeChatCouponOrderCount">
+		SELECT c.id,c.vendor_id vendorId,c.pay_time payTime,c.openid openId,c.order_id orderId,c.wx_order_id wxOrderId,
+		c.goods_name goodsName,c.coupon_id couponId,c.coupon_name couponName,c.reduce reduce,c.leastCost leastCost,
+		c.order_money_1 order_money_1,c.update_time updateTime,u.vendorName vendorName
+		FROM `tb_coupon_wx_order_count` c LEFT JOIN `tb_user` u ON c.vendor_id=u.vendorId
+		LIMIT #{pageBean.index},#{pageBean.pageSize}
+	</select>
+	
+</mapper>

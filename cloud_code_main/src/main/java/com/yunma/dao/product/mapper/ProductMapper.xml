@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.product.ProductDao">
+
+	<select id="getGroupFirst" parameterType="map" resultType="GroupVo">
+		<!-- SELECT row_id rowId,vendor_id vendorId,row_name rowName,row_pid rowPid,product_num productNum 
+		FROM tb_product_row
+		WHERE vendor_id = #{vendorId} AND row_pid IS NULL
+		ORDER BY rowId DESC
+		LIMIT #{pageBean.index},#{pageBean.pageSize} -->
+		SELECT 
+			t1.`row_id` rowId,
+			COUNT(t2.`row_id`) productNum,t1.vendor_id vendorId,t1.row_name rowName,t1.row_pid rowPid
+		FROM `tb_product_row` t1 
+		LEFT JOIN `tb_product` t2 ON t2.`row_id` = t1.`row_id` AND t2.`vendor_id` = #{vendorId}
+		WHERE t1.`vendor_id` = #{vendorId} AND row_pid IS NULL
+		GROUP BY t1.`row_id`
+		ORDER BY t1.`row_id` DESC
+		LIMIT #{pageBean.index},#{pageBean.pageSize}
+	</select>	
+	
+	<select id="getGroupFirstCount" parameterType="integer" resultType="integer">
+		SELECT count(*) 
+		FROM tb_product_row
+		WHERE vendor_id = #{vendorId} AND row_pid IS NULL
+	</select>
+	
+	<select id="getGroupSecond" resultType="GroupVo">
+		<!-- SELECT row_id rowId,vendor_id vendorId,row_name rowName,row_pid rowPid,product_num productNum 
+		FROM tb_product_row
+		WHERE row_pid = #{id} -->
+		SELECT 
+			t1.`row_id` rowId,
+			COUNT(t2.`row_id`) productNum,t1.vendor_id vendorId,t1.row_name rowName,t1.row_pid rowPid
+		FROM `tb_product_row` t1 
+		LEFT JOIN `tb_product` t2 ON t2.`row_id` = t1.`row_id` AND t2.`vendor_id` = 1
+		WHERE row_pid = #{id}
+		GROUP BY t1.`row_id`
+		ORDER BY t1.`row_id` DESC
+	</select>
+	
+	<update id="updateGroup" parameterType="GroupVo">
+		UPDATE tb_product_row
+		<set>
+			<if test="rowName != null and rowName != ''">
+				row_name = #{rowName},
+			</if>
+			<if test="productNum != null and productNum != ''">
+				product_num = #{productNum}
+			</if>
+		</set>
+		WHERE row_id = #{rowId}
+	</update>
+	
+	<delete id="deleteGroupById" parameterType="int">
+		DELETE FROM tb_product_row WHERE row_id = #{id}
+	</delete>
+	
+	<insert id="addGroup" parameterType="GroupVo">
+		INSERT INTO tb_product_row (
+			vendor_id,row_name,product_num
+			<if test="type == 2">
+				,row_pid
+			</if>
+		) VALUE(
+			#{vendorId},#{rowName},#{productNum}
+			<if test="type == 2">
+				,#{rowPid}
+			</if>
+		)
+	</insert>
+	
+	<select id="hasProductName" resultType="integer">
+		SELECT count(*) FROM tb_product WHERE vendor_id=#{0} AND product_name=#{1} AND delete_flag=0
+	</select>
+	
+	<insert id="addProduct">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		INSERT INTO tb_product (
+			vendor_id
+			<if test="rowId != null">,row_id</if>
+			<if test="productName != null">,product_name</if>
+			<if test="productImgId != null">,product_img</if>
+			<if test="productImg != null">,product_img</if>
+			<if test="productPrice != null">,product_price</if>
+			<if test="productMarketPrice != null">,product_market_price</if>
+			<if test="productTotal != null">,product_total</if>
+			<if test="productCode != null">,product_code</if>
+			<if test="productUnit != null">,product_unit</if>
+			<if test="productBarCode != null">,product_bar_code</if>
+			<if test="productBewrite != null">,product_bewrite</if>
+			<if test="productDetail != null">,product_detail</if>
+			<if test="productType != null">,product_type</if>
+			<if test="productSpe != null">,product_spe</if>
+			<!-- <if test="mallTitle != null">,mall_title</if>
+			<if test="mallNum != null">,mall_num</if>
+			<if test="mallWeight != null">,mall_weight</if>
+			<if test="mallPoint != null">,mall_point</if>
+			<if test="mallSort != null">,mall_sort</if>
+			<if test="isMall != null">,mall_isMall</if> -->
+			,delete_flag
+		) VALUE (
+			#{vendorId}
+			<if test="rowId != null">,#{rowId}</if>
+			<if test="productName != null">,#{productName}</if>
+			<if test="productImgId != null">,#{productImgId}</if>
+			<if test="productImg != null">,#{productImg}</if>
+			<if test="productPrice != null">,#{productPrice}</if>
+			<if test="productMarketPrice != null">,#{productMarketPrice}</if>
+			<if test="productTotal != null">,#{productTotal}</if>
+			<if test="productCode != null">,#{productCode}</if>
+			<if test="productUnit != null">,#{productUnit}</if>
+			<if test="productBarCode != null">,#{productBarCode}</if>
+			<if test="productBewrite != null">,#{productBewrite}</if>
+			<if test="productDetail != null">,#{productDetail}</if>
+			<if test="productType != null">,#{productType}</if>
+			<if test="productSpe != null">,#{productSpe}</if>
+			<!-- <if test="mallTitle != null">,#{mallTitle}</if>
+			<if test="mallNum != null">,#{mallNum}</if>
+			<if test="mallWeight != null">,#{mallWeight}</if>
+			<if test="mallPoint != null">,#{mallPoint}</if>
+			<if test="mallSort != null">,#{mallSort}</if>
+			<if test="isMall != null">,#{isMall}</if> -->
+			,0
+		)
+	</insert>
+	
+	<insert id="addParams" parameterType="ProductParams">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		INSERT INTO tb_product_params (
+			product_id,param_key,param_value
+		) VALUE (
+			#{productId},#{paramKey},#{paramValue}
+		) 
+	</insert>
+	
+	<update id="updateProduct" parameterType="product">
+		UPDATE tb_product 
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="rowId != null">row_id = #{rowId},</if>
+			<if test="productName != null">product_name = #{productName},</if>
+			<if test="productImg != null">product_img = #{productImg},</if>
+			<if test="productPrice != null">product_price = #{productPrice},</if>
+			<if test="productMarketPrice != null">product_market_price = #{productMarketPrice},</if>
+			<if test="productTotal != null">product_total = #{productTotal},</if>
+			<if test="productCode != null">product_code = #{productCode},</if>
+			<if test="productUnit != null">product_unit = #{productUnit},</if>
+			<if test="productBarCode != null">product_bar_code = #{productBarCode},</if>
+			<if test="productBewrite != null">product_bewrite = #{productBewrite},</if>
+			<if test="productDetail != null">product_detail = #{productDetail},</if>
+			<if test="productType != null">product_type = #{productType},</if>
+			<if test="productSpe != null">product_spe = #{productSpe},</if>
+			<if test="sortNum != null">sort_num = #{sortNum},</if>
+			<if test="lastUpdateTime != null">last_update_time = #{lastUpdateTime},</if>
+			<!-- <if test="mallTitle != null">mall_title = #{mallTitle},</if>
+			<if test="mallNum != null">mall_num = #{mallNum},</if>
+			<if test="mallWeight != null">mall_weight = #{mallWeight},</if>
+			<if test="mallPoint != null">mall_point = #{mallPoint},</if>
+			<if test="mallSort != null">mall_sort = #{mallSort},</if>
+			<if test="isMall != null">mall_isMall = #{isMall},</if> -->
+			<if test="deleteFlag != null">delete_flag = #{deleteFlag}</if>
+			<if test="isCouponRule != null">is_coupon_rule = #{isCouponRule}</if>
+		</trim>
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateProductParams" parameterType="ProductParams">
+		UPDATE tb_product_params 
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="paramKey != null">param_key = #{paramKey},</if>
+			<if test="paramValue != null">param_value = #{paramValue}</if>
+		</trim>
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteProduct">
+	DELETE FROM tb_product WHERE id = #{id}
+	</delete>
+	
+	<select id="getProductById" parameterType="Integer" resultType="ProductVo">
+		SELECT p.id id,p.row_id rowId,p.vendor_id vendorId,p.product_name productName,
+			p.product_spe productSpe ,p.product_price productPrice,
+			p.product_market_price productMarketPrice,p.product_total productTotal,p.product_code productCode,
+			p.product_unit productUnit,p.product_bar_code productBarCode,p.product_bewrite productBewrite,
+			p.sort_num sortNum,p.product_detail productDetail,p.sort_num sortNum,
+			r.row_name rowName,
+			i.item_name productTypeName,
+			img.img_url productImg,img.id imgId
+	   	FROM tb_product p 
+		LEFT JOIN tb_product_row  r ON p.row_id = r.row_id
+		LEFT JOIN tb_dictionary_item i ON p.product_type = i.id
+		LEFT JOIN tb_image img ON p.product_img = img.id AND img.img_type = '1' <!-- 1表示查询的是产品  -->
+		WHERE p.id = #{id}
+	</select>
+	
+	<select id="getProductParamByProductId" parameterType="Integer" resultType="ProductParams">
+		SELECT p.id id,p.`product_id` productId,p.`param_key` paramKey,p.`param_value` paramValue  
+		FROM `tb_product_params` p 
+		WHERE p.`product_id` = #{productId}
+	</select>
+	
+	<select id="getProductCount" parameterType="ProductVo" resultType="integer">
+		SELECT count(*) 
+		FROM tb_product
+		WHERE vendor_id = #{vendorId} 
+		<if test="deleteFlag != null">
+		AND delete_flag = #{deleteFlag}
+		</if>
+		<if test="keyword != null">
+		AND (product_name like conCat(conCat('%',#{keyword}),'%') OR product_spe like conCat(conCat('%',#{keyword}),'%'))
+		</if>
+	</select>
+	
+	<select id="getProductInfoById" parameterType="integer" resultType="Product">
+		SELECT p.id id,p.product_name productName,p.product_spe productSpe,p.product_img productImg,
+			p.row_id rowId,p.product_price productPrice,p.sort_num sortNum,p.last_update_time lastUpdateTime 
+		FROM tb_product p 
+		WHERE p.id = #{id}
+	</select>
+	
+	<select id="getProduct" parameterType="map" resultType="ProductVo">
+	SELECT p.id id,p.product_name productName,p.product_spe productSpe,i.img_url productImg,
+	p.row_id rowId,p.product_price productPrice,p.sort_num sortNum,r.row_name rowName,p.last_update_time lastUpdateTime 
+	FROM tb_product p 
+	LEFT JOIN tb_product_row r ON p.row_id = r.row_id  
+	LEFT JOIN tb_image i ON p.product_img = i.id
+	WHERE p.vendor_id = #{product.vendorId}
+	<if test="product.deleteFlag != null">
+	AND delete_flag = #{product.deleteFlag}
+	</if>
+	<if test="product.keyword != null">
+	AND (p.product_name like conCat(conCat('%',#{product.keyword}),'%') OR p.product_spe like conCat(conCat('%',#{product.keyword}),'%'))
+	</if>
+	ORDER BY p.sort_num DESC,p.id DESC 
+	<if test="pageBean.pageSize != 0">
+	LIMIT #{pageBean.index},#{pageBean.pageSize}
+	</if>
+	</select>
+	
+	<select id="getPresentGroup" parameterType="integer" resultType="GroupVo">
+	SELECT t1.row_id rowId,productNum,row_name rowName  FROM (
+		SELECT 
+			t1.`row_id`,
+			COUNT(t2.`row_id`) productNum
+		FROM `tb_present_row` t1 
+		LEFT JOIN `tb_present` t2 ON t2.`row_id` = t1.`row_id`   AND t2.`vendor_id` = #{vendorId}
+		WHERE t1.`vendor_id` = #{vendorId}
+		GROUP BY t1.`row_id`
+	) t
+	JOIN `tb_present_row` t1 ON t.`row_id` = t1.`row_id`
+	</select>
+	
+	<insert id="addPresentGroup" parameterType="GroupVo">
+	INSERT INTO tb_present_row(row_name,vendor_id) VALUE(#{rowName},#{vendorId})
+	</insert>
+	
+	<update id="updatePresentGroup" parameterType="GroupVo">
+	UPDATE tb_present_row SET row_name = #{rowName} WHERE row_id = #{rowId}
+	</update>
+	
+	<delete id="deletePresentGroup">
+	DELETE FROM tb_present_row WHERE row_id = #{id}
+	</delete>
+	
+	<delete id="deletePresent">
+	DELETE FROM tb_present WHERE id = #{id} 
+	</delete>
+	
+	<select id="hasPresent" parameterType="ProductVo" resultType="int">
+		SELECT COUNT(*) FROM `tb_present` WHERE vendor_id = #{vendorId} AND present_name = #{productName}
+	</select>
+	
+	<insert id="addPresent">
+		INSERT INTO tb_present(
+			vendor_id
+		<if test="rowId != null">
+			,row_id
+		</if>
+		<if test="productImg != null">
+			,present_img
+		</if>
+		<if test="productName != null">
+			,present_name
+		</if>
+		<if test="productPrice != null">
+			,present_price
+		</if>
+		<if test="weight != null">
+			,present_weight
+		</if>
+		<if test="productTotal != null">
+			,present_num
+		</if>
+		<if test="productCode != null">
+			,present_code
+		</if>
+		<if test="productDetail != null">
+			,present_detail
+		</if>
+		<if test="productSpe != null">
+			,present_spe
+		</if>
+		,delete_flag
+		) VALUE(
+			#{vendorId}
+		<if test="rowId != null">
+			,#{rowId}
+		</if>
+		<if test="productImg != null">
+			,#{productImg}
+		</if>
+		<if test="productName != null">
+			,#{productName}
+		</if>
+		<if test="productPrice != null">
+			,#{productPrice}
+		</if>
+		<if test="weight != null">
+			,#{weight}
+		</if>
+		<if test="productTotal != null">
+			,#{productTotal}
+		</if>
+		<if test="productCode != null">
+			,#{productCode}
+		</if>
+		<if test="productDetail != null">
+			,#{productDetail}
+		</if>
+		<if test="productSpe != null">
+			,#{productSpe}
+		</if>
+		,0
+		)
+	</insert>
+	
+	<update id="updatePresent" parameterType="ProductVo">
+		UPDATE tb_present
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="productName != null">
+				present_name = #{productName},
+			</if>
+			<if test="productPrice != null">
+				present_price = #{productPrice},
+			</if>
+			<if test="rowId != null">
+				row_id = #{rowId},
+			</if>
+			<if test="productImg != null">
+				present_img = #{productImg},
+			</if>
+			<if test="weight != null">
+				present_weight = #{weight},
+			</if>
+			<if test="productTotal != null">
+				present_num = #{productTotal},
+			</if>
+			<if test="productCode != null">
+				present_code = #{productCode},
+			</if>
+			<if test="productDetail != null">
+				present_detail = #{productDetail},
+			</if>
+			<if test="productSpe != null">
+				present_spe = #{productSpe},
+			</if>
+			<if test="deleteFlag != null">
+				delete_flag = #{deleteFlag},
+			</if>
+			last_update_time = now()
+		</trim>
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getPresentCount" resultType="integer" parameterType="Product">
+		SELECT count(*) FROM tb_present WHERE vendor_id = #{vendorId}
+		<if test="deleteFlag != null">
+		AND delete_flag = #{deleteFlag}
+		</if>
+		<if test="keyword != null">
+		AND present_name like conCat(conCat('%',#{keyword}),'%') 
+		</if>
+	</select>
+	
+	<select id="getPresent" parameterType="map" resultType="ProductVo">
+		SELECT 
+			p.id id,p.present_name productName,p.row_id vendorId, p.present_price productPrice,p.last_update_time lastUpdateTime,
+			r.row_name rowName,r.row_id rowId,
+			i.img_url productImg
+		FROM tb_present p 
+		LEFT JOIN tb_present_row r ON p.row_id = r.row_id
+		LEFT JOIN tb_image i ON p.present_img = i.id
+		WHERE p.vendor_id = #{productVo.vendorId}
+		<if test="productVo.deleteFlag != null">
+		AND delete_flag = #{productVo.deleteFlag}
+		</if>
+		<if test="productVo.keyword != null">
+		AND p.present_name like conCat(conCat('%',#{productVo.keyword}),'%') 
+		</if>
+		ORDER BY p.id DESC
+		LIMIT #{pageBean.index},#{pageBean.pageSize}
+	</select>
+	
+	<select id="hasGroup" resultType="integer">
+	SELECT count(*) FROM tb_product_row WHERE vendor_id = #{0} AND row_name = #{1}
+	</select>
+	
+	<select id="hasPresentGroup" resultType="integer">
+	SELECT count(*) FROM tb_present_row WHERE vendor_id = #{0} AND row_name = #{1}
+	</select>
+	
+	<select id="getNotGroupProductCount" parameterType="ProductVo" resultType="integer">
+	SELECT count(*) FROM tb_product WHERE row_id IS NULL AND vendor_id = #{vendorId}
+	</select>
+	
+	<insert id="addImageInfo" parameterType="ImageVo">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		INSERT INTO tb_image (
+			vendor_id,
+			<if test="imgType != null">img_type,</if>
+			<if test="imgWidth != null">img_width,</if>
+			<if test="imgHeight != null">img_height,</if>
+			<if test="rowId != null">row_id,</if>
+			<if test="imgName != null">img_name,</if>
+			<if test="imgUrl != null">img_url</if>
+		) VALUE (
+			#{vendorId},
+			<if test="imgType != null">#{imgType},</if>
+			<if test="imgWidth != null">#{imgWidth},</if>
+			<if test="imgHeight != null">#{imgHeight},</if>
+			<if test="rowId != null">#{rowId},</if>
+			<if test="imgName != null">#{imgName},</if>
+			<if test="imgUrl != null">#{imgUrl}</if>
+		)
+	</insert>
+	
+	<update id="updateImageInfo" parameterType="ImageVo">
+		UPDATE tb_image 
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="imgWidth != null">img_width,</if>
+			<if test="imgHeight != null">img_height,</if>
+			<if test="rowId != null">row_id,</if>
+			<if test="imgName != null">img_name,</if>
+			<if test="imgUrl != null">img_url</if>
+		</trim>
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteImage" parameterType="integer">
+		DELETE FROM tb_image WHERE id = #{id}
+	</delete>
+	
+	<select id="getImageInfoCount" parameterType="ImageVo" resultType="integer">
+		SELECT count(*) FROM tb_image WHERE vendor_id = #{vendorId}
+		<if test="keyword != null">
+		AND img_name like conCat(conCat('%',#{keyword}),'%') 
+		</if>
+	</select>
+	
+	<select id="getImageInfo" parameterType="map" resultType="imageVo">
+		SELECT id id,vendor_id vendorId,img_type imgType,img_url imgUrl,img_name imgName,img_width imgWidth,img_height imgHeight 
+		FROM tb_image 
+		WHERE vendor_id = #{imageVo.vendorId} AND img_type = #{imageVo.imgType}
+		<if test="imageVo.keyword != null">
+		AND img_name LIKE conCat(conCat('%',#{imageVo.keyword}),'%') 
+		</if>
+		ORDER BY id DESC 
+		LIMIT #{pageBean.index},#{pageBean.pageSize}
+	</select>
+	
+	<select id="getPresentById" resultType="ProductVo" parameterType="integer">
+		SELECT p.id id,p.present_price productPrice,p.present_name productName,p.present_spe productSpe,  
+  		p.present_weight weight,p.present_num productTotal,p.present_code productCode,p.present_detail productDetail, p.last_update_time lastUpdateTime,
+    	r.row_id rowId,r.row_name rowName,    i.id imgId,i.img_url productImg   FROM tb_present p    
+		LEFT JOIN tb_image i ON p.present_img = i.id AND i.`img_type` = '2' 
+   		LEFT JOIN tb_present_row r ON p.`row_id` = r.`row_id`   WHERE p.`id`=#{id}
+	</select>
+	
+	<delete id="deleteProductParam" parameterType="integer">
+		DELETE FROM tb_product_params WHERE id = #{paramId}
+	</delete>
+	
+	<select id="getProductForCollectWord" parameterType="map" resultType="ProductVo">
+	SELECT p.id id,p.product_name productName,p.product_spe productSpe,i.img_url productImg,
+	p.row_id rowId,p.product_price productPrice,p.sort_num sortNum,r.row_name rowName,p.last_update_time lastUpdateTime 
+	FROM tb_product p 
+	LEFT JOIN tb_product_row r ON p.row_id = r.row_id  
+	LEFT JOIN tb_image i ON p.product_img = i.id
+	WHERE p.vendor_id = #{product.vendorId}
+	<if test="product.deleteFlag != null">
+	AND delete_flag = 0
+	</if>
+	AND isCollectWord=0
+	
+	ORDER BY p.sort_num DESC,p.id DESC 
+	<if test="pageBean.pageSize != 0">
+	LIMIT #{pageBean.index},#{pageBean.pageSize}
+	</if>
+	</select>
+	
+	
+	<select id="getProductCountForCollectWord" parameterType="ProductVo" resultType="integer">
+		SELECT count(*) 
+		FROM tb_product
+		WHERE vendor_id = #{vendorId} 
+		AND delete_flag = 0
+		and isCollectWord = 0
+	</select>
+	
+</mapper>

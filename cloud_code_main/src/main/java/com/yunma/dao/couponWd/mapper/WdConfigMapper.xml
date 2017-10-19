@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.couponWd.WdConfigDao">
+
+	<insert id="addWdConfig" parameterType="WdConfig">
+		INSERT INTO tb_coupon_wd_config (
+			app_key,secret,access_token,vendor_id,create_time
+			<if test="productUrl != null">,product_url</if>
+			<if test="wenUrl != null">,wen_url</if>
+		) VALUE (
+			#{appKey},#{secret},#{accessToken},#{vendorId},now()
+			<if test="productUrl != null">,#{productUrl}</if>
+			<if test="wenUrl != null">,#{wenUrl}</if>
+		)
+	</insert>
+	
+	<update id="updateWdConfig" parameterType="WdConfig">
+		UPDATE tb_coupon_wd_config 
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="appKey != null">app_key = #{appKey},</if>
+			<if test="secret != null">secret = #{secret},</if>
+			<if test="accessToken != null">access_token = #{accessToken},</if>
+			<if test="productUrl != null">product_url = #{productUrl},</if>
+			<if test="wenUrl != null">wen_url = #{wenUrl},</if>
+			update_time = now(),
+		</trim>
+		WHERE vendor_id = #{vendorId}
+	</update>
+	
+	<select id="getWdConfig" parameterType="Integer" resultType="WdConfig">
+		SELECT id,app_key appKey,secret,access_token accessToken,vendor_id vendorId,create_time createTime,update_time updateTime,product_url productUrl,wen_url wenUrl
+		FROM tb_coupon_wd_config
+		WHERE vendor_id = #{vendorId}
+	</select>
+	
+	<select id="getWdConfigAll" resultType="WdConfig">
+		SELECT id,app_key appKey,secret,access_token accessToken,vendor_id vendorId,create_time createTime,update_time updateTime,product_url productUrl,wen_url wenUrl
+		FROM tb_coupon_wd_config
+	</select>
+</mapper>

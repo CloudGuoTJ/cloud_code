@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.couponWechat.WeChatCouponDao">
+
+	<insert id="createCoupon" parameterType="WxCoupon">
+		INSERT INTO tb_coupon_info_wx SET id=#{id},vendor_id=#{vendor_id},appid = #{appid},mch_id = #{mch_id},coupon_stock_id = #{coupon_stock_id},coupon_name=#{coupon_name},
+		coupon_stock_status=#{coupon_stock_status},coupon_total=#{coupon_total},max_quota=#{max_quota},is_send_num=#{is_send_num},begin_time=#{begin_time},
+		end_time=#{end_time},createTime=#{createTime},coupon_value=#{coupon_value},coupon_mininumn=#{coupon_mininumn}
+	</insert>
+	
+	<select id="getWeChatCouponAll" resultType="Coupon">
+		SELECT id ,coupon_name couponName,begin_time beginTime,end_time endTime,coupon_mininumn leastCost,
+		coupon_value money,coupon_total-is_send_num couponTotal,'' weidianFetchUrl,vendor_id vendorId,coupon_total stockCount,1 AS style
+		FROM tb_coupon_info_wx
+		WHERE coupon_stock_status=4
+		<if test="vendorId != null and vendorId != ''">
+		 AND vendor_id = #{vendorId}
+		</if>
+		<![CDATA[
+			AND DATE_FORMAT(begin_time,'%Y-%m-%d') <= #{currTimeStr} AND DATE_FORMAT(end_time,'%Y-%m-%d') >= #{currTimeStr}
+		]]>
+	</select>
+	
+	<select id="getCouponAllOther" resultType="Coupon">
+		SELECT vendor_id vendorId,id,1 style
+		FROM tb_coupon_info_wx
+		WHERE coupon_stock_status=4 AND vendor_id != #{vendorId}
+		<![CDATA[
+			AND DATE_FORMAT(begin_time,'%Y-%m-%d') <= #{currTimeStr} AND DATE_FORMAT(end_time,'%Y-%m-%d') >= #{currTimeStr}
+		]]>
+	</select>
+	
+	<select id="getCouponByCouponId" parameterType="String" resultType="Coupon">
+		SELECT coupon_stock_id id ,coupon_name couponName,begin_time beginTime,end_time endTime,coupon_mininumn leastCost,
+		coupon_value money,coupon_total-is_send_num couponTotal,'' weidianFetchUrl,vendor_id vendorId,coupon_total stockCount,1 AS style,appid,secret
+		FROM tb_coupon_info_wx
+		WHERE coupon_stock_status=4 AND id = #{id}
+	</select>
+	
+	<insert id="addReceiveRecord" parameterType="WeChatCouponReceiveRecord">
+		INSERT INTO tb_coupon_wx_receive_record SET coupon_id=#{couponId},vendor_id=#{vendorId},openid=#{openid},coupon_stock_id=#{couponStockId},create_time=now()
+	</insert>
+</mapper>

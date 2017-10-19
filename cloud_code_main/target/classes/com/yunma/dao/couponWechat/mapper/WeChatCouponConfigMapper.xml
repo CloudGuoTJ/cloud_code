@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.couponWechat.WeChatCouponConfigDao">
+
+	<insert id="addWechatCouponConfig" parameterType="WeChatCouponConfig">
+		INSERT INTO tb_coupon_wx_config SET vendor_id = #{vendorId},app_id = #{appId},secret = #{secret},api_key = #{apiKey},mch_id = #{mchId},product_url = #{productUrl},credentials_location = #{credentialsLocation}
+	</insert>
+	
+	<select id="getWeChatCouponConfig" parameterType="Integer" resultType="WeChatCouponConfig">
+		SELECT id,vendor_id vendorId,app_id appId,secret,api_key apiKey,mch_id mchId,product_url productUrl,credentials_location credentialsLocation
+		FROM tb_coupon_wx_config 
+		WHERE vendor_id = #{vendorId}
+	</select>
+	
+	<update id="updateWeChatCouponConfig" parameterType="WeChatCouponConfig">
+		UPDATE tb_coupon_wx_config
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="appId != null">app_id = #{appId},</if>
+			<if test="secret != null">secret = #{secret},</if>
+			<if test="apiKey != null">api_key = #{apiKey},</if>
+			<if test="mchId != null">mch_id = #{mchId},</if>
+			<if test="productUrl != null">product_url = #{productUrl},</if>
+			<if test="credentialsLocation != null">credentials_location = #{credentialsLocation}</if>
+		</trim>
+		WHERE vendor_id = #{vendorId}
+	</update>
+	
+	<select id="getWeChatCouponConfigAll" resultType="WeChatCouponConfig">
+		SELECT id,vendor_id vendorId,app_id appId,secret secret,api_key apiKey,mch_id mchId,credentials_location credentialsLocation,product_url productUrl
+		FROM tb_coupon_wx_config
+	</select>
+
+</mapper>

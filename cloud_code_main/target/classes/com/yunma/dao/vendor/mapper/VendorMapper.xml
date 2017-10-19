@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.vendor.VendorDao">
+
+	<!--  <select id="getBasicInfo" parameterType="Integer" resultType="VendorBasicInfoVo">
+		SELECT vendor_id vendorId,vendor_name vendorName ,vendor_logo imgUrl,brand_name brandName,industry_name industryName,
+			contact_name contactName,custom_phone customPhone,vendor_weixin vendorWeixin,custom_tel customTel,
+			vendor_address vendorAddress,link link,official_accounts officialAccounts 
+		FROM tb_vendor_user_detail
+		WHERE vendor_id=#{vendorId} LIMIT 1
+	</select> 		-->
+	
+	<update id="uploadRegistrationPic" parameterType="RegisterChecking" >
+	UPDATE tb_vendor_user_register_checking 
+		<set>
+			<if test="tradeMarkImgUrl != null">
+				tradeMarkImgUrl = #{tradeMarkImgUrl},
+			</if>
+			<if test="tradeMarkLicense != null">
+				tradeMarkLicense = #{tradeMarkLicense},
+			</if>
+			<if test="bankAccountOpeningLicense != null">
+				bankAccountOpeningLicense = #{bankAccountOpeningLicense},
+			</if>
+			<if test="foodProductionLicence != null">
+				foodProductionLicence = #{foodProductionLicence},
+			</if>
+			<if test="organizationCodeCertificate != null">
+				organizationCodeCertificate = #{organizationCodeCertificate},
+			</if>	
+			<if test="industrialProductionLicense != null">
+				industrialProductionLicense = #{industrialProductionLicense},
+			</if>	
+				
+		</set> 
+			WHERE checkId = #{checkId}
+	</update>
+	
+	
+	
+	
+	<select id="getBasicInfo" parameterType="Integer" resultType="VendorBasicInfoVo">
+		SELECT u.userName userName,u.vendorName vendorName,d.vendor_logo imgUrl,d.industry_name industryName,
+			d.contact_name contactName,d.custom_phone customPhone,d.vendor_weixin vendorWeixin,
+			d.custom_tel customTel,d.vendor_address vendorAddress,d.link link ,vendor_id vendorId
+			FROM tb_user u LEFT JOIN tb_vendor_user_detail d ON u.vendorId=d.vendor_id 
+			WHERE d.vendor_id=#{vendorId} LIMIT 1
+	</select>
+	
+	<update id="updateVendorUserByVendorId" parameterType="VendorUser">
+		UPDATE tb_vendor_user 
+		<set>
+			<if test="vendorName != null">
+				vendor_name = #{vendorName},
+			</if>
+			<if test="vendorPwd != null">
+				vendor_pwd = #{vendorPwd},
+			</if>
+			<if test="vendorTel != null">
+				vendor_tel = #{vendorTel},
+			</if>
+			<if test="vendorNickName != null">
+				vendor_nickName = #{vendorNickName},
+			</if>
+			<if test="rowId != null">
+				row_id = #{rowId},
+			</if>
+			<if test="vendorEmail != null">
+				vendor_email = #{vendorEmail},
+			</if>
+			<if test="loginTime != null">
+				login_time = #{loginTime},
+			</if>
+			<if test="accessToken != null">
+				access_token = #{accessToken},
+			</if>
+			<if test="findPwd != null">
+				find_pwd = #{findPwd},
+			</if>
+			<if test="mainHtmlComment != null">
+				mainHtml_comment = #{mainHtmlComment},
+			</if>
+			<if test="payPassword != null">
+				pay_password = #{payPassword}
+			</if>
+		</set> 
+			WHERE vendor_id = #{vendorId}
+	</update>
+	
+	<update id="updateVendorUserDetailByVendorId" parameterType="VendorUserDetail">
+		update tb_vendor_user_detail
+		<set>
+			<if test="brandName != null">
+				brand_name = #{brandName},
+			</if>
+			<if test="industryName != null">
+				industry_name = #{industryName},
+			</if>
+			<if test="contactName != null">
+				contact_name = #{contactName},
+			</if>
+			<if test="vendorLogo != null">
+				vendor_logo = #{vendorLogo},
+			</if>
+			<if test="vendorWeixin != null">
+				vendor_weixin = #{vendorWeixin},
+			</if>
+			<if test="customPhone != null">
+				custom_phone = #{customPhone},
+			</if>
+			<if test="customTel != null">
+				custom_tel = #{customTel},
+			</if>
+			<if test="vendorAddress != null">
+				vendor_address = #{vendorAddress},
+			</if>
+			<if test="link != null">
+				link = #{link},
+			</if>
+			<if test="officialAccounts != null">
+				official_accounts = #{officialAccounts}
+			</if>			
+		</set>
+		WHERE vendor_id = #{vendorId}
+	</update>
+	
+	<select id="getBalanceByVendorId" parameterType="Integer" resultType="double">
+		SELECT balance FROM `tb_vendor_account` WHERE vendorId=#{vendorId}
+	</select>
+	
+	<select id="getPaymoneyByVendorId" parameterType="Integer" resultType="double">
+		SELECT paymoney FROM `tb_vendor_account_paydetail` WHERE vendorId=#{vendorId}
+	</select>
+	
+	
+	<select id="getVendorInfo" parameterType="Integer" resultType="VendorInfo">
+		select v.detail_id detailId, v.vendor_id vendorId, v.brand_name brandName, v.industry_name industryName,
+ 		v.custom_phone customPhone, v.function_type functionType, v.link link, v.vendor_mall vendorMall, v.official_accounts wxConfig,
+ 		v.vendor_qualification img_vendor_qualification, v.trademark_certificate img_trademark_certificate,
+ 		v.industrial_production_license img_industrial_production_license, v.food_production_license img_food_production_license,
+ 		v.bank_account_license img_bank_account_license,v.vendor_emaill Emaill
+ 		from `tb_vendor_user_detail` v where v.vendor_id=#{detailId} and v.delete_flag=0;
+	</select>
+	
+	<update id="updateVendorInfo" parameterType="VendorInfo">
+		UPDATE tb_vendor_user_detail
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="detailId != null">
+				vendor_id = #{detailId},
+			</if>
+	<!--  		<if test="vendorId != null">
+				vendor_id = #{vendorId},
+			</if>  -->
+			<if test="brandName != null">
+				brand_name = #{brandName},
+			</if>
+			<if test="industryName != null">
+				industry_name = #{industryName},
+			</if>
+			<if test="customPhone != null">
+				custom_phone = #{customPhone},
+			</if>
+			<if test="functionType != null">
+				function_type = #{functionType},
+			</if>
+			<if test="link != null">
+				link = #{link},
+			</if>
+			<if test="vendorMall != null">
+				vendor_mall = #{vendorMall},
+			</if>
+			<if test="wxConfig != null">
+				official_accounts = #{wxConfig},
+			</if>
+			<if test="img_vendor_qualification != null">
+				vendor_qualification = #{img_vendor_qualification},
+			</if>
+			<if test="img_trademark_certificate != null">
+				trademark_certificate = #{img_trademark_certificate},
+			</if>
+			<if test="img_industrial_production_license != null">
+				industrial_production_license = #{img_industrial_production_license},
+			</if>
+			<if test="img_food_production_license != null">
+				food_production_license = #{img_food_production_license},
+			</if>
+			<if test="img_bank_account_license != null">
+				bank_account_license = #{img_bank_account_license},
+			</if>
+			<if test="Emaill != null">
+				vendor_emaill = #{Emaill},
+			</if>
+			
+			
+		</trim>
+		WHERE vendor_id = #{vendorId}
+	</update>
+	
+	
+	<insert id="addVendorInfo">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="vendorId">
+			SELECT LAST_INSERT_ID() AS vendorId
+		</selectKey>
+		INSERT INTO tb_vendor_user_detail (
+			
+			<if test="brandName != null">brand_name</if>
+			<if test="industryName != null">,industry_name</if>
+			<if test="customPhone != null">,custom_phone</if>
+			<if test="functionType != null">,function_type</if>
+			<if test="link != null">,link</if>
+			<if test="vendorMall != null">,vendor_mall</if>
+			<if test="wxConfig != null">,official_accounts</if>
+			<if test="Emaill != null">,vendor_emaill</if>
+			<if test="img_vendor_qualification != null">,vendor_qualification</if>
+			<if test="img_trademark_certificate != null">,trademark_certificate</if>
+			<if test="img_industrial_production_license != null">,industrial_production_license</if>
+			<if test="img_food_production_license != null">,food_production_license</if>
+			<if test="img_bank_account_license != null">,bank_account_license</if>
+			,createTime
+			,delete_flag
+		) VALUE (
+			
+			<if test="brandName != null">#{brandName}</if>
+			<if test="industryName != null">,#{industryName}</if>
+			<if test="customPhone != null">,#{customPhone}</if>
+			<if test="functionType != null">,#{functionType}</if>
+			<if test="link != null">,#{link}</if>
+			<if test="vendorMall != null">,#{vendorMall}</if>
+			<if test="wxConfig != null">,#{wxConfig}</if>
+			<if test="Emaill != null">,#{Emaill}</if>
+			<if test="img_vendor_qualification != null">,#{img_vendor_qualification}</if>
+			<if test="img_trademark_certificate != null">,#{img_trademark_certificate}</if>
+			<if test="img_industrial_production_license != null">,#{img_industrial_production_license}</if>
+			<if test="img_food_production_license != null">,#{img_food_production_license}</if>
+			<if test="img_bank_account_license != null">,#{img_bank_account_license}</if>
+			,now()
+			,0
+		)
+	</insert>
+	
+<!-- 	<insert id="addVendorBaInfoVo">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="vendoprId">
+			SELECT LAST_INSERT_ID() AS vendor_id
+		</selectKey>
+		INSERT INTO tb_vendor_user_detail(
+		
+		<if test="vendor_name !=null">#{vendorName}</if>
+		<if test="brand_name !=null">,#{brandName}</if>
+		<if test="vendor_logo !=null">,#{imgUrl}</if>
+		<if test="industry_name !=null">,#{industryName}</if>
+		<if test="contact_name !=null">,#{contactName}</if>
+		<if test="custom_phone !=null">,#{customPhone}</if>
+		<if test="vendor_weixin !=null">,#{vendorWeixin}</if>
+		<if test="custom_tel !=null">,#{customTel}</if>
+		<if test="vendor_address !=null">,#{vendorAddress}</if>
+		<if test="link !=null">,#{link}</if>
+		<if test="official_accounts !=null">,#{officialAccounts}</if>
+		)VALUE(
+		
+		<if test="vendor_name !=null">#{vendorName}</if>
+		<if test="brand_name !=null">,#{brandName}</if>
+		<if test="vendor_logo !=null">,#{imgUrl}</if>
+		<if test="industry_name !=null">,#{industryName}</if>
+		<if test="contact_name !=null">,#{contactName}</if>
+		<if test="custom_phone !=null">,#{customPhone}</if>
+		<if test="vendor_weixin !=null">,#{vendorWeixin}</if>
+		<if test="custom_tel !=null">,#{customTel}</if>
+		<if test="vendor_address !=null">,#{vendorAddress}</if>
+		<if test="link !=null">,#{link}</if>
+		<if test="official_accounts !=null">,#{officialAccounts}</if>
+		)	
+	
+	</insert>    -->
+	
+	<insert id="addImageInfo" parameterType="VendorBrandImgs">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		INSERT INTO tb_vendor_brand_imgs (
+		
+			<if test="imgWidth != null">img_width,</if>
+			<if test="imgheight != null">img_height,</if>
+			<if test="imgName != null">img_name,</if>
+			<if test="imgUrl != null">img_url</if>
+			
+		) VALUE (
+		
+			<if test="imgWidth != null">#{imgWidth},</if>
+			<if test="imgheight != null">#{imgheight},</if>
+			<if test="imgName != null">#{imgName},</if>
+			<if test="imgUrl != null">#{imgUrl}</if>
+			
+		)
+	</insert>
+	
+	<select id="countVendor" resultType="Integer">
+		select count(*) from `tb_vendor_user_detail` where delete_flag=0
+	</select>
+	
+	<insert id="addImgVendor" parameterType="ImgAndVendor">
+		insert into tb_img_vendor (
+			<if test="img_id != null">img_id,</if>
+			<if test="vendor_detail_id != null">vendor_detail_id</if>
+		)value(
+			<if test="img_id != null">#{img_id},</if>
+			<if test="vendor_detail_id != null">#{vendor_detail_id}</if>
+		)
+	</insert>
+	
+	
+	<select id="getImgVendor" parameterType="Integer" resultType="ImgVendorVo">
+		 select iv.img_id img_id, img.img_url imgUrl,vd.detail_id vendor_detail_id
+		from  `tb_vendor_brand_imgs` img left join `tb_img_vendor` iv on img.id=iv.img_id
+		left join `tb_vendor_user_detail` vd on iv.vendor_detail_id=vd.vendor_id
+		where vd.vendor_id=#{vendor_detail_id}
+	</select>
+	
+	<insert id="addPayRecord" parameterType="VendorAccountPayDetail">
+		INSERT INTO tb_vendor_account_paydetail (
+		<trim suffixOverrides=",">
+			<if test="vendorId != null">vendor_id,</if>
+			<if test="vendorAccountId != null">vendor_account_id,</if>
+			<if test="payChannelName != null">pay_channel_name,</if>
+			<if test="payChannelRateMoney != null">pay_channel_rate_money,</if>
+			<if test="payUserName != null">pay_user_name,</if>
+			<if test="payUserPwd != null">pay_user_pwd,</if>
+			<if test="payVendorAccount != null">pay_vendor_account,</if>
+			<if test="unionOrderNo != null">union_order_no,</if>
+			<if test="serialNumber != null">serial_number,</if>
+			<if test="status != null">status,</if>
+			<if test="createTime != null">create_time,</if>
+			<if test="payMoney != null">pay_money,</if>
+			<if test="bizMoney != null">biz_money,</if>
+			<if test="bizTime != null">biz_time,</if>
+			<if test="remark != null">remark</if>
+		</trim>
+		) VALUE (
+		<trim suffixOverrides=",">
+			<if test="vendorId != null">#{vendorId},</if>
+			<if test="vendorAccountId != null">#{vendorAccountId},</if>
+			<if test="payChannelName != null">#{payChannelName},</if>
+			<if test="payChannelRateMoney != null">#{payChannelRateMoney},</if>
+			<if test="payUserName != null">#{payUserName},</if>
+			<if test="payUserPwd != null">#{payUserPwd},</if>
+			<if test="payVendorAccount != null">#{payVendorAccount},</if>
+			<if test="unionOrderNo != null">#{unionOrderNo},</if>
+			<if test="serialNumber != null">#{serialNumber},</if>
+			<if test="status != null">#{status},</if>
+			<if test="createTime != null">#{createTime},</if>
+			<if test="payMoney != null">#{payMoney},</if>
+			<if test="bizMoney != null">#{bizMoney},</if>
+			<if test="bizTime != null">#{bizTime},</if>
+			<if test="remark != null">#{remark}</if>
+		</trim>
+		)
+	</insert>
+	
+	<update id="updateAccount" parameterType="VendorAccount">
+		UPDATE tb_vendor_account SET balance = #{balance},updateTime = now()
+		WHERE vendorId = #{vendorId}
+	</update>
+	
+</mapper>

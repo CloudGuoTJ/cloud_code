@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.couponWq.WqCouponDao">
+
+	<select id="hasCoupon" parameterType="Integer" resultType="int">
+		SELECT count(*) FROM tb_coupon_wq_vendor WHERE wq_id = #{wqId}
+	</select>
+
+	<insert id="addCoupon" parameterType="WqCouponVendor">
+		INSERT INTO tb_coupon_wq_vendor SET vendor_id=#{vendorId},wq_id=#{wqId},coupon_name=#{couponName},reduce=#{reduce},least_cost=#{leastCost},get_url=#{getUrl},total=#{total},getmax=#{getmax},limitdiscounttype=#{limitdiscounttype},create_time=#{createTimeStr},start_time=#{startTimeStr},end_time=#{endTimeStr}
+		<if test="productUrl != null and productUrl != ''">
+			,product_url=#{productUrl},product_url_update_time=now()
+		</if>
+	</insert>
+	
+	<select id="getCouponByVendorId" parameterType="int" resultType="WqCouponVendor">
+		SELECT wq_id wqId FROM tb_coupon_wq_vendor WHERE vendor_id=#{vendorId}
+	</select>
+	
+	<update id="updateCoupon" parameterType="WqCouponVendor">
+		UPDATE tb_coupon_wq_vendor SET vendor_id=#{vendorId},coupon_name=#{couponName},reduce=#{reduce},least_cost=#{leastCost},get_url=#{getUrl},total=#{total},getmax=#{getmax},limitdiscounttype=#{limitdiscounttype},create_time=#{createTimeStr},start_time=#{startTimeStr},end_time=#{endTimeStr}
+		<if test="productUrl != null and productUrl != ''">
+			,product_url=#{productUrl},product_url_update_time=now()
+		</if>
+		WHERE wq_id=#{wqId}
+	</update>
+	
+	<select id="getCouponAll" resultType="Coupon">
+		SELECT id,coupon_name couponName,start_time beginTime,end_time endTime,reduce money,least_cost leastCost,total couponTotal,
+		get_url weidianFetchUrl,vendor_id vendorId,4 AS style,wq_id couponId
+		FROM `tb_coupon_wq_vendor` 
+		WHERE vendor_id = #{vendorId}
+		<![CDATA[
+			AND DATE_FORMAT(start_time,'%Y-%m-%d') <= #{currTimeStr} AND DATE_FORMAT(end_time,'%Y-%m-%d') >= #{currTimeStr}
+		]]>
+	</select>
+	
+	<select id="getCouponAllOther" resultType="Coupon">
+		SELECT id,coupon_name couponName,start_time beginTime,end_time endTime,reduce money,least_cost leastCost,total couponTotal,
+		get_url weidianFetchUrl,vendor_id vendorId,4 AS style,wq_id couponId
+		FROM `tb_coupon_wq_vendor` 
+		WHERE vendor_id != #{vendorId}
+		<![CDATA[
+			AND DATE_FORMAT(start_time,'%Y-%m-%d') <= #{currTimeStr} AND DATE_FORMAT(end_time,'%Y-%m-%d') >= #{currTimeStr}
+		]]>
+	</select>
+	
+	<select id="getCouponPorudctUrl" parameterType="Integer" resultType="String">
+		SELECT product_url productUrl FROM `tb_coupon_wq_vendor` WHERE vendor_id = #{vendorId} ORDER BY product_url_update_time DESC LIMIT 1
+	</select>
+
+</mapper>

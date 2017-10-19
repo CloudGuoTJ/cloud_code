@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.weChart.VendorHtmlActivInfoDao">
+	
+	<insert id="saveHtmlInfo" parameterType="VendorHtmlActivInfo">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		INSERT INTO tb_vendor_activ_info (
+		
+			<if test="comment != null">comment,</if>
+			<if test="vendorId != null">vendorId,</if>
+			<if test="htmlUri != null">htmlUri,</if>
+			<if test="htmlName != null">httpName,</if>
+			<if test="getRedEnv != null">getRedEnv,</if>
+			<if test="productInfo != null">productInfo,</if>
+			<if test="vendorHttp != null">vendorHttp,</if>
+			<if test="weShop != null">weShop,</if>
+			<if test="spree != null">spree,</if>
+			<if test="securityAndTraceability != null">securityAndTraceability,</if>
+			<if test="urlName != null">urlName,</if>
+			<if test="urlName != null">storeData,</if>
+			<if test="urlName != null">tempType,</if>			
+			createTime
+		)value(
+			<if test="comment != null">#{comment},</if>
+			<if test="vendorId != null">#{vendorId},</if>
+			<if test="htmlUri != null">#{htmlUri},</if>
+			<if test="htmlName != null">#{htmlName},</if>
+			<if test="getRedEnv != null">#{getRedEnv},</if>
+			<if test="productInfo != null">#{productInfo},</if>
+			<if test="vendorHttp != null">#{vendorHttp},</if>
+			<if test="weShop != null">#{weShop},</if>
+			<if test="spree != null">#{spree},</if>
+			<if test="securityAndTraceability != null">#{securityAndTraceability},</if>
+			<if test="urlName != null">#{urlName},</if>		
+			<if test="urlName != null">#{storeData},</if>
+			<if test="urlName != null">#{tempType},</if>
+			now()
+		)
+	</insert>
+</mapper>

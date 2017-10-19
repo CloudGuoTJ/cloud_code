@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.redEnvelope.RedEnvDao">
+
+	<insert id="addRedEnvRule" parameterType="RedEnvRule">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		INSERT INTO tb_envelope_vendor_redenvelope_rule (
+			vendor_id,
+			<if test="ruleName != null">rule_name,</if>
+			<if test="ruleLvel != null">rule_level,</if>
+			<if test="oneRate != null">one_rate,</if>
+			<if test="oneMinMoney != null">one_min_money,</if>
+			<if test="oneMaxMoney != null">one_max_money,</if>
+			<if test="twoRate != null">two_rate,</if>
+			<if test="twoMinMoney != null">two_min_money,</if>
+			<if test="twoMaxMoney != null">two_max_money,</if>
+			<if test="threeRate != null">three_rate,</if>
+			<if test="threeMinMoney != null">three_min_money,</if>
+			<if test="threeMaxMoney != null">three_max_money,</if>
+			<if test="fourRate != null">four_rate,</if>
+			<if test="fourMinMoney != null">four_min_money,</if>
+			<if test="fourMaxMoney != null">four_max_money,</if>
+			<if test="fiveRate != null">five_rate,</if>
+			<if test="fiveMinMoney != null">five_min_money,</if>
+			<if test="fiveMaxMoney != null">five_max_money,</if>
+			<if test="createTime != null">create_time,</if>
+			<if test="rule_type != null">rule_type,</if>
+			<if test="send_name != null">send_name,</if>
+			<if test="wishing != null">wishing</if>
+		) VALUE (
+			#{vendorId},
+			<if test="ruleName != null">#{ruleName},</if>
+			<if test="ruleLvel != null">#{ruleLvel},</if>
+			<if test="oneRate != null">#{oneRate},</if>
+			<if test="oneMinMoney != null">#{oneMinMoney},</if>
+			<if test="oneMaxMoney != null">#{oneMaxMoney},</if>
+			<if test="twoRate != null">#{twoRate},</if>
+			<if test="twoMinMoney != null">#{twoMinMoney},</if>
+			<if test="twoMaxMoney != null">#{twoMaxMoney},</if>
+			<if test="threeRate != null">#{threeRate},</if>
+			<if test="threeMinMoney != null">#{threeMinMoney},</if>
+			<if test="threeMaxMoney != null">#{threeMaxMoney},</if>
+			<if test="fourRate != null">#{fourRate},</if>
+			<if test="fourMinMoney != null">#{fourMinMoney},</if>
+			<if test="fourMaxMoney != null">#{fourMaxMoney},</if>
+			<if test="fiveRate != null">#{fiveRate},</if>
+			<if test="fiveMinMoney != null">#{fiveMinMoney},</if>
+			<if test="fiveMaxMoney != null">#{fiveMaxMoney},</if>
+			<if test="createTime != null">#{createTime},</if>
+			<if test="rule_type != null">#{rule_type},</if>
+			<if test="send_name != null">#{send_name},</if>
+			<if test="wishing != null">#{wishing}</if>
+		)
+	</insert>
+	
+	<select id="getRedEnvRuleByVendorId" parameterType="integer" resultType="RedEnvRule">
+		SELECT 
+			id id,
+			rule_name ruleName,
+			rule_level ruleLvel,
+			one_rate oneRate,
+			one_min_money oneMinMoney,
+			one_max_money oneMaxMoney,
+			two_rate twoRate,
+			two_min_money twoMinMoney,
+			two_max_money twoMaxMoney,
+			three_rate threeRate,
+			three_min_money threeMinMoney,
+			three_max_money threeMaxMoney,
+			four_rate fourRate,
+			four_min_money fourMinMoney,
+			four_max_money fourMaxMoney,
+			five_rate fiveRate,
+			five_min_money fiveMinMoney,
+			five_max_money fiveMaxMoney,
+			create_time createTime,
+			rule_type,
+			send_name,
+			wishing
+		FROM tb_envelope_vendor_redenvelope_rule
+		WHERE vendor_id = #{vendorId}
+	</select>
+	
+	<select id="hasRedEnvRuleName" resultType="integer">
+		SELECT count(*) FROM tb_envelope_vendor_redenvelope_rule WHERE vendor_id = #{0} AND rule_name = #{1}
+	</select>
+	
+	<select id="getRedEnvRuleById" parameterType="integer" resultType="RedEnvRule">
+		SELECT 
+			id id,
+			rule_name ruleName,
+			rule_level ruleLvel,
+			one_rate oneRate,
+			one_min_money oneMinMoney,
+			one_max_money oneMaxMoney,
+			two_rate twoRate,
+			two_min_money twoMinMoney,
+			two_max_money twoMaxMoney,
+			three_rate threeRate,
+			three_min_money threeMinMoney,
+			three_max_money threeMaxMoney,
+			four_rate fourRate,
+			four_min_money fourMinMoney,
+			four_max_money fourMaxMoney,
+			five_rate fiveRate,
+			five_min_money fiveMinMoney,
+			five_max_money fiveMaxMoney,
+			create_time createTime
+		FROM tb_envelope_vendor_redenvelope_rule
+		WHERE id = #{id}
+	</select>
+
+	<update id="createRedEvnTable" parameterType="String">
+	${sql}
+	</update>
+	
+	<insert id="batchInsert" parameterType="String">
+	${sql}
+	</insert>
+	
+	<select id="getRedEnvRuleCount" parameterType="map" resultType="integer">
+		SELECT count(*) 
+		FROM tb_envelope_vendor_redenvelope_rule 
+		WHERE vendor_id = #{vendorId} 
+		<if test="keyword != null">
+			AND rule_name like conCat(conCat('%',#{keyword}),'%') 
+		</if>
+		<if test="startTime != null and endTime != null">
+			<![CDATA[
+				AND (
+					DATE_FORMAT(create_time,'%Y-%m-%d') >= #{startTime} AND
+              		DATE_FORMAT(create_time,'%Y-%m-%d') <= #{endTime}
+                )
+			]]>
+		</if>
+	</select>
+	
+	<select id="getRedEnvRuleList" parameterType="map" resultType="RedEnvRule">
+		SELECT 
+			id id,
+			rule_name ruleName,
+			rule_level ruleLvel,
+			one_rate oneRate,
+			one_min_money oneMinMoney,
+			one_max_money oneMaxMoney,
+			two_rate twoRate,
+			two_min_money twoMinMoney,
+			two_max_money twoMaxMoney,
+			three_rate threeRate,
+			three_min_money threeMinMoney,
+			three_max_money threeMaxMoney,
+			four_rate fourRate,
+			four_min_money fourMinMoney,
+			four_max_money fourMaxMoney,
+			five_rate fiveRate,
+			five_min_money fiveMinMoney,
+			five_max_money fiveMaxMoney,
+			create_time createTime,
+			rule_type,
+			send_name,
+			wishing
+		FROM `tb_envelope_vendor_redenvelope_rule` 
+		WHERE vendor_id = #{vendorId}
+		<if test="keyword != null and keyword != ''">
+			AND rule_name like conCat(conCat('%',#{keyword}),'%') 
+		</if>
+		<if test="startTime != null and endTime != null">
+			<![CDATA[
+				AND (
+					DATE_FORMAT(create_time,'%Y-%m-%d') >= #{startTime} AND
+              		DATE_FORMAT(create_time,'%Y-%m-%d') <= #{endTime}
+                )
+			]]>
+		</if>
+		ORDER BY id DESC
+		LIMIT #{pageBean.index},#{pageBean.pageSize}
+	</select>
+	
+	<insert id="addRedEnvInfo" parameterType="map">
+		INSERT INTO 
+		tb_envelope(vendor_id,order_id,rule_id,rule_name,recharge_money,create_time,start_time,end_time,STATUS)
+		VALUE (
+			#{redEnv.vendorId},#{redEnv.orderId},#{rule.id},#{rule.ruleName},#{rechargeMoney},now(),#{redEnv.startTimeStr},#{redEnv.endTimeStr},1
+		)
+	</insert>
+	
+	<select id="getRedEnvInfoCount" parameterType="map" resultType="int">
+		SELECT COUNT(*) FROM tb_envelope WHERE vendor_id = #{vendorId} AND status = 1
+	</select>
+	
+	<select id="getRedEnvInfo" parameterType="map" resultType="RedEnvelope">
+		SELECT id,vendor_id vendorId,order_id orderId,rule_id ruleId,rule_name ruleName,recharge_money rechargeMoney,consume_money consumeMoney,create_time createTime,start_time startTime,end_time endTime,status status
+		FROM tb_envelope 
+		WHERE vendor_id = #{vendorId} AND status = 1
+		LIMIT #{pageBean.index},#{pageBean.pageSize}
+	</select>
+	
+	<select id="getRedEnvById" parameterType="RedEnv" resultType="RedEnv">
+		SELECT 
+		red_env_id id,order_id orderId,vendor_id vendorId,rule_id ruleId,securityCode_id securityCodeId,
+		envelope_money money,state,status,create_time createTime,start_time startTime,end_time endTime,openId,open_time openTime,receive_time receiveTime
+		FROM tb_envelope_vendor_createredenvelope_#{orderId}
+		WHERE securityCode_id = #{securityCodeId}
+	</select>
+	
+	<update id="updateRedEnvById" parameterType="RedEnv">
+		UPDATE tb_envelope_vendor_createredenvelope_#{orderId} 
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="state != null">state = #{state},</if>
+			<if test="status != null">status = #{status},</if>
+			<if test="openTime != null">open_time = #{openTime},</if>
+			<if test="receiveTime != null">receive_time = #{receiveTime}</if>
+		</trim>
+		WHERE securityCode_id = #{securityCodeId}
+	</update>
+	
+	<select id="getSecurityCodeByIdRedEnvId" parameterType="RedEnv" resultType="String">
+		SELECT openId 
+		FROM tb_anti_fake_#{vendorId} 
+		WHERE securityCodeId = #{securityCodeId} 
+		ORDER BY rowkey 
+		LIMIT 1
+	</select>
+	
+	<insert id="addDrawRecord" parameterType="RedEnv">
+		INSERT INTO tb_envelope_draw_redenvelope_record 
+		(order_id,vendor_id,red_env_id,security_code,openId,reveice_time,getEnvelopeMoney) VALUE 
+		(#{orderId},#{vendorId},#{id},#{securityCodeId},#{openId},now(),#{money})
+	</insert>
+	
+	<select id="getEnvelopeByOrderId" parameterType="Integer" resultType="RedEnvelope">
+		SELECT
+				id,vendor_id vendorId,order_id orderId,rule_id ruleId,rule_name ruleName,recharge_money rechargeMoney,consume_money consumeMoney,create_time createTime,start_time startTime,end_time endTime,status status
+		FROM tb_envelope
+		WHERE order_id = #{orderId}
+	</select>
+	
+	<update id="updateEnvelope" parameterType="RedEnvelope">
+		UPDATE tb_envelope SET consume_money = #{consumeMoney} WHERE order_id = #{orderId}
+	</update>
+	
+	<select id="getSecurityCodeByOrderId" parameterType="Integer" resultType="SecurityCode">
+	SELECT s.securityCodeId,s.orderId FROM tb_security_code_#{orderId} s 
+	</select>
+	
+	<select id="getActivTotalCount" parameterType="Integer" resultType="int">
+		SELECT COUNT(*) FROM tb_envelope_vendor_createredenvelope_#{orderId}
+	</select>
+	
+	<select id="getJoinActivCount" parameterType="Integer" resultType="int">
+		SELECT COUNT(*) FROM tb_envelope_vendor_createredenvelope_#{orderId} WHERE status=1 
+	</select>
+	
+	<select id="getDaylyJoinActivCount" parameterType="Integer" resultType="int">
+		SELECT 
+		 COUNT(*) 
+		FROM 
+		 tb_envelope_vendor_createredenvelope_#{orderId} WHERE
+		 TO_DAYS( NOW( ) ) - TO_DAYS( start_time) <![CDATA[<=]]> 1 
+		AND
+	     status=1 
+	</select>
+	
+	<insert id="addRedEnvRuleArea" parameterType="RedEnvRuleArea">
+		INSERT INTO tb_envelope_vendor_redenvelope_rule_area SET
+		rule_id=#{ruleId},adcode=#{adcode},province=#{province},city=#{city},district=#{district}
+	</insert>
+	
+	<select id="getRedEnvRuleArea" parameterType="Integer" resultType="RedEnvRuleArea">
+		SELECT a.id,a.`rule_id` ruleId,a.`adcode` adcode,province,city,district FROM tb_envelope_vendor_redenvelope_rule_area a WHERE a.`rule_id` = (
+			SELECT r.`rule_id` FROM tb_envelope_vendor_createredenvelope_#{0} r LIMIT 1
+		)
+	</select>
+</mapper>

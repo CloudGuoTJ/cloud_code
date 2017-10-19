@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.couponRule.CouponRuleDao">
+
+	<insert id="addCouponRuleTag">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		INSERT INTO tb_coupon_rule_tag (name,vendor_id,create_time,is_default) VALUE (#{name},#{vendorId},#{createTime},#{isDefault},#{timeType}) 
+	</insert>
+	
+	<insert id="addCouponRuleTagItem" parameterType="CouponRuleTagItem">
+		INSERT INTO tb_coupon_rule_tag_item (tag_id,coupon_id,scale,create_time) VALUE (#{tagId},#{couponId},#{scale},#{createTime})
+	</insert>
+
+	<delete id="deleteCouponTag" parameterType="integer">
+		DELETE * FROM tb_coupon_rule_tag WHERE id = #{tagId}
+	</delete>
+	
+	<delete id="deleteCouponTagItem" parameterType="integer">
+		DELETE * FROM tb_coupon_rule_tag_item WHERE tag_id = #{tagId}
+	</delete>
+
+	<select id="getCouponRuleTagByVendorId" parameterType="integer" resultType="CouponRuleTag">
+		SELECT id,name,vendor_id vendorId,create_time createTime FROM tb_coupon_rule_tag WHERE vendor_id = #{vendorId}
+	</select>
+	
+	<select id="getCouponRuleTagItemByTagId" parameterType="integer" resultType="CouponRuleTagItem">
+		SELECT i.id,i.tag_id tagId,i.coupon_id couponId,i.scale,i.create_time createTime,i2.title couponName
+		FROM tb_coupon_rule_tag_item i LEFT JOIN tb_coupon_info i2 ON i.coupon_id=i2.couponId
+		WHERE i.tag_id = #{tagId}
+	</select>
+	
+	<insert id="addCouponRule" parameterType="CouponRule">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		INSERT INTO tb_coupon_rule (
+		<trim suffixOverrides=",">
+			<if test="vendorId != null">vendor_id,</if>
+			<if test="tagId != null">tag_id,</if>
+			<if test="ruleName != null">rule_name,</if>
+			<if test="createTime != null">create_time,</if>
+			<if test="startTimeStr != null">start_time,</if>
+			<if test="endTimeStr != null">end_time,</if>
+			<if test="isBlackWhite != null">is_black_white,</if>
+			<if test="isScope != null">is_scope,</if>
+			<if test="isDefault != null">is_default,</if>
+			<if test="timeType != null">time_type,</if>
+		</trim>
+		) 
+		VALUE (
+		<trim suffixOverrides=",">
+		<if test="vendorId != null">#{vendorId},</if>
+		<if test="tagId != null">#{tagId},</if>
+		<if test="ruleName != null">#{ruleName},</if>
+		<if test="createTime != null">#{createTime},</if>
+		<if test="startTimeStr != null">#{startTimeStr},</if>
+		<if test="endTimeStr != null">#{endTimeStr},</if>
+		<if test="isBlackWhite != null">#{isBlackWhite},</if>
+		<if test="isScope != null">#{isScope},</if>
+		<if test="isDefault != null">#{isDefault},</if>
+		<if test="timeType != null">#{timeType}</if>
+		</trim>
+		)
+	</insert>
+	
+	<insert id="addCouponRuleItem" parameterType="CouponRuleItem">
+		INSERT INTO tb_coupon_rule_item (rule_id,type,item_id) VALUE (#{ruleId},#{type},#{itemId})
+	</insert>
+	
+	<select id="getCouponRuleInfo" resultType="CouponRule">
+		SELECT id,rule_name ruleName,state,time_type timeType,start_time startTime,end_time endTime,is_black_white isBlackWhite,is_scope isScope,is_default isDefault
+		FROM tb_coupon_rule
+		WHERE vendor_id = #{vendorId}
+		LIMIT #{pageBean.index},#{pageBean.pageSize}
+	</select>
+	
+	<select id="getCouponRuledetailById" parameterType="integer" resultType="CouponRule">
+		SELECT id,rule_name ruleName,state,time_type timeType,start_time startTime,end_time endTime,is_black_white isBlackWhite,is_scope isScope,is_default isDefault
+		FROM tb_coupon_rule
+		WHERE id = #{couponRuleId}
+	</select>
+	
+	<select id="getCouponRuleInfoCount" resultType="integer">
+		SELECT count(*) FROM tb_coupon_rule WHERE vendor_id = #{vendorId}
+	</select>
+	
+	<select id="getCouponRuleItemBlackWhite" parameterType="String" resultType="CouponRuleItemVo">
+		${sql}		
+	</select>
+	
+	<select id="getCouponRuleItemScope" parameterType="String"  resultType="CouponRuleItemVo">
+		${sql}
+	</select>
+	
+	<select id="getVendorOther" parameterType="integer" resultType="VendorUserDetail">
+		SELECT DISTINCT vendor_id vendorId,brand_name brandName 
+		FROM `tb_coupon_info` i 
+		LEFT JOIN `tb_vendor_user_detail` d ON i.`vendorId`=d.`vendor_id` 
+		WHERE i.`vendorId` != #{vendorId}
+	</select>
+	
+	<select id="getOrderByVendorId" parameterType="Integer" resultType="ProductOrder">
+		SELECT orderid FROM `tb_product_order` WHERE vendorId = #{vendorId} AND is_coupon_rule = '0'
+	</select>
+	
+	<select id="getProductByVendorId" parameterType="integer" resultType="Product">
+		SELECT id,product_name productName FROM `tb_product` WHERE vendor_id =  #{vendorId} AND is_coupon_rule = '0'
+	</select>
+	
+	<update id="updateProductOrderFlag">
+		UPDATE tb_product_order SET is_coupon_rule = #{isCouponRule} WHERE orderId = #{orderId}
+	</update>
+	
+	<select id="getCouponRuleByOrderId" resultType="CouponRule">
+		SELECT id,vendor_id vendorId,rule_name ruleName,create_time createTime,start_time startTime,end_time endTime,state,time_type timeType,is_black_white isBlackWhite,is_scope isScope,is_default isDefault 
+		FROM tb_coupon_rule 
+		WHERE id IN (
+			SELECT rule_id FROM tb_coupon_rule_item WHERE type = #{couponRuleItem.type} AND item_id = #{couponRuleItem.itemId}
+		) <![CDATA[
+			AND start_time <= #{currDate} AND end_time >= #{currDate}
+		]]>
+		ORDER BY id DESC
+		LIMIT 1
+	</select>
+	
+	<select id="getCouponRuleItemByRuleId" parameterType="CouponRuleItem" resultType="CouponRuleItem">
+		SELECT id,rule_id ruleId,TYPE,item_id itemId FROM `tb_coupon_rule_item` WHERE rule_id = #{ruleId} AND type = #{type}
+	</select>
+	
+	<select id="getDistinctCouponAllOther" resultType="Coupon">
+	SELECT a.vendorId,couponId,2 style FROM (
+			SELECT vendorId,couponId
+			FROM tb_coupon_info
+			WHERE STATUS=1 AND vendorId != #{vendorId}
+			<![CDATA[
+				AND beginTime <= #{currTimeStr} AND endTime >= #{currTimeStr}
+			]]>
+		) a GROUP BY vendorId,couponId
+	</select>
+	
+	<update id="updateProductCouponRuleFlag">
+		UPDATE tb_product SET is_coupon_rule=#{flag} WHERE vendor_id = #{vendorId}
+	</update>
+	
+	
+	<select id="getVendorOutBlack" resultType="VendorUserDetail">
+	 ${sql}
+	</select>
+	
+	<delete id="deleteCouponRule" parameterType="integer">
+		DELETE FROM tb_coupon_rule WHERE id = #{id}
+	</delete>
+	
+	<delete id="deleteCouponRuleItem" parameterType="CouponRuleItem">
+		DELETE FROM tb_coupon_rule_item where rule_id = #{ruleId} 
+		<if test="type != null">
+		AND type = #{type}
+		</if>
+	</delete>
+	
+	<update id="updateCouponRuleFlag" parameterType="CouponRule">
+		UPDATE tb_coupon_rule
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="isBlackWhite != null">is_black_white = #{isBlackWhite},</if>
+			<if test="isScope != null">is_scope = #{isScope}</if>
+		</trim>
+		WHERE id = #{id}
+	</update>
+</mapper>

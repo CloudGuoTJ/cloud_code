@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+		<title>防伪查询</title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			a{text-decoration:none}
+			.header img{
+				width: 100vw;
+				
+			}
+			.content .true img{
+				width:54vw ;
+				margin-left: 22vw;
+				margin-top: 3vh;
+			}
+			.content .false img{
+				width: 54vw;
+				margin-left: 22vw;
+				margin-top: 3vh;
+			}
+			.foot{
+				border-top: 1px solid #CCCCCC;
+				margin-top: 4.5vh;
+			}
+			.foot .product{
+				font-size: 4vw;
+				margin-left: 4vw;
+			}
+			.foot .product h3{
+				margin-top: 3vh;
+			}
+			.foot .verification{
+				font-size: 4vw;
+				margin-left: 4vw;
+				width: 92vw;
+				
+				border-top: 1px dashed #BEBEBE;
+				margin-top: 3vh;
+			}
+			.foot .verification_false{
+				font-size: 4vw;
+				margin-left: 4vw;
+				width: 92vw;
+				
+				border-top: 1px dashed #BEBEBE;
+				margin-top: 3vh;
+			}
+			.foot .verification_false h3{
+				margin-top: 3vh;
+			}
+			.foot .verification h3{
+				margin-top: 3vh;
+			}
+			.foot .time{
+				font-size: 3.5vw;
+				margin-left: 4vw;
+				width: 92vw;
+				margin-bottom:6vh ;
+				border-top: 1px dashed #BEBEBE;
+				margin-top: 3vh;
+			}
+			.foot .time h3{
+				margin-top: 3vh;
+			}
+		</style>
+	</head>
+	<body>
+<!-- 		<div class="header">
+			<img src="img/png_banner.png"/> 
+		</div> -->
+		<div class="content">
+			<p style="text-align: center;margin-top: 4vh;">
+        	<img style="width: 39vw;height: 17vw;" src="img/icon_suyuan2.png"/></p>
+        	<p style="color: #eca100;font-family:'微软雅黑';height: 7.5vw;line-height: 7.5vw;font-size: 5vw;font-weight: bold;text-align: center;">
+        	您查询的是<span id="prodName"></span>正品
+        	</p>
+			<div class="false" style="display: none;">
+				<img src="img/fang.png">
+			</div>
+		</div>
+		<div class="foot">
+			<div class="product">
+				<h3>产品信息</h3>
+				生产企业:<span id="vendor">湖南相台春酿酒</span><br />
+				产品名称:<span id="productName">春酿酒</span><br />
+				有效期至:<span id="validateTime">2018-05-25</span><br />
+			</div>
+			<div class="info verification">
+				<h3>验证提示</h3>
+				该商品是第1次被扫描<br />
+				您所查询的商品是正品，请放心使用！
+			</div>
+			<div class="info verification_false" style="display: none;">
+				<h3>验证提示</h3>
+				该商品第<span id="scanCount">
+					0
+				</span>次被扫描<br />
+				商品扫描次数过多，请注意假冒!
+			</div>
+			<div class="info time">
+				<h3>首次验证信息</h3>
+				<span>【第一次扫描地址】</span><br />
+				<span id="firstAdd">广东省深圳市宝安区</span><br />
+				<span>【第一次扫描时间】 </span><br />
+				<span id="firstScanTime">2017-03-26 10:34:15</span>
+			</div>
+		</div>
+<script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js"></script>
+
+		<script>
+			(function(){
+				var anti = {
+					init: function () {
+						this.data = localStorage.getItem('infodata')
+						this.render()
+					},
+					render: function () {
+						var info = JSON.parse(this.data)
+						console.log(info)
+							if (info.reultCode==0) {
+								$('.true').show();
+								$('.verification').show();
+								$('.verification_false').hide();
+							} else {
+								$('.true').hide();
+								$('.false').show();
+								$('.verification').hide();
+								$('.verification_false').show();
+							}
+						info.countTotal? $('#scanCount').text(info.countTotal) : ''
+						info.countTotal? $('#prodName').text(info.productName) : ''
+						info.firstScanAddress ? $('#firstAdd').text(info.firstScanAddress) : ''
+						info.scanTime ? $('#firstScanTime').text(info.scanTime) : ''
+						info.productName ? $('#productName').text(info.productName) : ''
+						info.validateTime ? $('#validateTime').text(info.validateTime) : ''
+						info.vendorName ? $('#vendor').text(info.vendorName) : ''
+					}
+				}
+				anti.init()
+			})()
+		</script>
+	</body>
+</html>

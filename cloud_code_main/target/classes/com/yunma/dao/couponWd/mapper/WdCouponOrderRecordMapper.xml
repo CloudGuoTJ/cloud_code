@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.couponWd.WdCouponOrderRecordDao">
+
+	<insert id="addOrderRecord" parameterType="WdOrderRecord">
+		INSERT INTO tb_coupon_wd_order_record SET
+		vendor_id=#{vendorId},order_id=#{orderId},discount_type=#{discountType},discount_info=#{discountInfo},discount_price=#{discountPrice},price=#{price},total=#{total},express_fee=#{expressFee},status_ori=#{statusOri},item_id=#{itemId},item_name=#{itemName},item_price=#{itemPrice},item_quantity=#{itemQuantity},item_total_price=#{itemTotalPrice}
+		<if test="payTime != null and payTime != ''">
+		,pay_time=#{payTime}
+		</if>
+		<if test="isRefund != null and isRefund != ''">
+		,is_refund = #{isRefund}
+		</if>
+	</insert>
+
+	<select id="getOrderRecord" resultType="WdOrderRecord">
+		SELECT vendor_id vendorId,order_id orderId,discount_type discountType,discount_info discountInfo,discount_price discountPrice,price,total,express_fee expressFee,status_ori statusOri,item_name itemName,item_id itemId,item_price itemPrice,item_quantity itemQuantity,item_total_price itemTotalPrice,pay_time payTime,is_refund isRefund
+		FROM tb_coupon_wd_order_record
+		WHERE order_id = #{orderId} AND status_ori = #{order_type}
+	</select>
+	
+	<select id="getOrderRecordAll" resultType="String">
+		SELECT order_id FROM tb_coupon_wd_order_record WHERE vendor_id = #{vendorId} AND status_ori = #{statusOri}
+	</select>
+	
+	<select id="hasOrderRecord" resultType="Integer">
+		SELECT count(*) FROM tb_coupon_wd_order_record WHERE order_id = #{orderId} AND status_ori = #{statusOri}
+	</select>
+	
+	<select id="getCouponOrder" parameterType="Integer" resultType="WdOrderRecord">
+		SELECT vendor_id vendorId,order_id orderId,discount_type discountType,discount_info discountInfo,discount_price discountPrice,price,total,express_fee expressFee,status_ori statusOri
+		FROM tb_coupon_wd_order_record
+		WHERE vendor_id = #{vendorId} AND discount_info = '优惠券'
+	</select>
+	
+	<select id="getValidCouponByVendor" resultType="WdCoupon">
+		SELECT * FROM tb_coupon_info WHERE vendorId = #{vendorId} <![CDATA[AND beginTime <= #{endTime} AND endTime >= #{startTime}]]>
+	</select>
+
+	<insert id="addOrderCount" parameterType="WdOrderCount">
+		INSERT INTO tb_coupon_wd_order_count SET status_ori=#{statusOri},vendor_id=#{vendorId},order_id=#{orderId},coupon_id=#{couponId},coupon_name=#{couponName},reduce=#{reduce},least_cost=#{leastCost},item_id=#{itemId},item_name=#{itemName},item_price=#{itemPrice},item_quantity=#{itemQuantity},item_total_price=#{itemTotalPrice},price=#{price},total=#{total},update_time=now()
+		<if test="payTime != null and payTime != ''">,pay_time=#{payTime}</if>
+		<if test="isRefund != null and isRefund != ''">,is_refund=#{isRefund}</if>
+	</insert>
+	
+	<select id="hasOrderCount" resultType="int">
+		SELECT COUNT(*) FROM `tb_coupon_wd_order_count` WHERE order_id = #{orderId}
+	</select>
+	
+	<update id="updateOrderCount" parameterType="WdOrderCount">
+		UPDATE tb_coupon_wd_order_count SET status_ori = #{statusOri} WHERE order_id = #{orderId}
+	</update>
+	
+	<select id="getOrderCount" resultType="int">
+		SELECT count(*) FROM tb_coupon_wd_order_count WHERE vendor_id = #{vendorId} AND #{time} = DATE_FORMAT(pay_time,'%Y-%m') 
+	</select>
+	
+	<select id="getOrderCountInfo" resultType="WdOrderCount">
+		SELECT c.id,c.vendor_id vendorId,c.order_id orderId,c.coupon_name couponName,c.reduce,c.least_cost leastCost,
+		c.price,total,c.item_id itemId,c.item_name itemName,c.item_price itemPrice,c.item_quantity itemQuantity,c.coupon_id couponId,
+		c.item_total_price itemTotalPrice,c.pay_time payTime,c.update_time updateTime,u.vendorName vendorName,c.status_ori statusOri,c.is_refund isRefund
+		FROM tb_coupon_wd_order_count c LEFT JOIN `tb_user` u ON c.vendor_id=u.vendorId
+		WHERE c.vendor_id = #{vendorId} AND #{time} = DATE_FORMAT(c.pay_time,'%Y-%m') 
+		ORDER BY pay_time DESC
+		LIMIT #{pageBean.index},#{pageBean.pageSize}
+	</select>
+	
+	<select id="getOrderCountInfoSum" resultType="Double">
+		SELECT SUM(c.price)
+		FROM tb_coupon_wd_order_count c 
+		WHERE c.vendor_id = #{vendorId} AND #{time} = DATE_FORMAT(c.pay_time,'%Y-%m') 
+		ORDER BY pay_time DESC
+	</select>
+	
+	<select id="getOrderAllTypeById" parameterType="String" resultType="WdOrderRecord">
+		SELECT vendor_id vendorId,order_id orderId,discount_type discountType,discount_info discountInfo,discount_price discountPrice,price,total,express_fee expressFee,status_ori statusOri,item_name itemName,item_id itemId,item_price itemPrice,item_quantity itemQuantity,item_total_price itemTotalPrice,pay_time payTime 
+		FROM tb_coupon_wd_order_record WHERE order_id = #{orderId}
+	</select>
+	
+	<update id="updateOrderRecord" parameterType="WdOrderRecord">
+		UPDATE tb_coupon_wd_order_record SET is_refund = #{isRefund} WHERE id = #{id}
+	</update>
+	
+	<select id="getOrderRecordByType" parameterType="WdOrderRecord" resultType="WdOrderRecord">
+		SELECT id id,vendor_id vendorId,order_id orderId,discount_type discountType,discount_info discountInfo,discount_price discountPrice,price,total,express_fee expressFee,status_ori statusOri,item_name itemName,item_id itemId,item_price itemPrice,item_quantity itemQuantity,item_total_price itemTotalPrice,pay_time payTime 
+		FROM tb_coupon_wd_order_record 
+		WHERE order_id = #{orderId} AND status_ori = #{statusOri}
+	</select>
+	
+	<select id="getVendorOrder" resultType="WdOrderCountVo">
+		SELECT c.vendor_id vendorId,u.vendorName vendorName,COUNT(*) payCount
+		FROM `tb_coupon_wd_order_count` c 
+		LEFT JOIN tb_user u ON c.vendor_id = u.vendorId 
+		WHERE  c.pay_time IS NOT NULL 
+		AND #{time} = DATE_FORMAT(c.pay_time,'%Y-%m') 
+		GROUP BY c.vendor_id
+		ORDER BY vendor_id DESC
+		LIMIT #{pageBean.index},#{pageBean.pageSize}
+	</select>
+	
+	<select id="getVendorOrderTotalCount" resultType="int">
+		SELECT SUM(payCount) FROM (
+			SELECT COUNT(*) payCount
+			FROM `tb_coupon_wd_order_count` c 
+			LEFT JOIN tb_user u ON c.vendor_id = u.vendorId 
+			WHERE  c.pay_time IS NOT NULL 
+			AND #{time} = DATE_FORMAT(c.pay_time,'%Y-%m') 
+			GROUP BY c.vendor_id
+			ORDER BY vendor_id DESC
+		) a
+	</select>
+	
+	<select id="getVendorOrderCount" resultType="int">
+		SELECT COUNT(*) FROM (
+			SELECT c.vendor_id vendorId,u.vendorName vendorName,COUNT(*) cou
+			FROM `tb_coupon_wd_order_count` c 
+			LEFT JOIN tb_user u ON c.vendor_id = u.vendorId 
+			WHERE  c.pay_time IS NOT NULL 
+			AND #{time} = DATE_FORMAT(c.pay_time,'%Y-%m') 
+			GROUP BY c.vendor_id
+			ORDER BY vendor_id DESC
+		) a 
+	</select>
+	
+	<select id="getVendorOrderSum" parameterType="String" resultType="WdOrderCountVo">
+		SELECT vendor_id vendorId,SUM(price) paySum
+		FROM tb_coupon_wd_order_count 
+		WHERE pay_time IS NOT NULL AND is_refund = 0
+		AND #{time} = DATE_FORMAT(pay_time,'%Y-%m') 
+		GROUP BY vendor_id
+		ORDER BY vendor_id DESC
+	</select>
+
+</mapper>

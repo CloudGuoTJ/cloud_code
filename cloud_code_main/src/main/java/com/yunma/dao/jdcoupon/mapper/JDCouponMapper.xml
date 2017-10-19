@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.jdcoupon.JDCouponDao">
+	<insert id="addJDUserInfo" parameterType="JDVendorInfo">
+		insert into tb_jd_coupon_vendor_info (
+			<if test="vendorId !=null">vendorId</if>
+			<if test="access_token !=null">,access_token</if>
+			<if test="code !=null">,code</if>
+			<if test="expires_in !=null">,expires_in</if>
+			<if test="refresh_token !=null">,refresh_token</if>
+			<if test="time !=null">,time</if>
+			<if test="token_type !=null">,token_type</if>
+			<if test="uid !=null">,uid</if>
+			<if test="user_nick !=null">,user_nick</if>
+		)value(
+			<if test="vendorId !=null">#{vendorId}</if>
+			<if test="access_token !=null">,#{access_token}</if>
+			<if test="code !=null">,#{code}</if>
+			<if test="expires_in !=null">,#{expires_in}</if>
+			<if test="refresh_token !=null">,#{refresh_token}</if>
+			<if test="time !=null">,#{time}</if>
+			<if test="token_type !=null">,#{token_type}</if>
+			<if test="uid !=null">,#{uid}</if>
+			<if test="user_nick !=null">,#{user_nick}</if>
+		)
+	</insert>
+	
+	<update id="updateJDVendorInfoByVendorId" parameterType="JDVendorInfo">
+		update tb_jd_coupon_vendor_info 
+		<trim prefix="SET" suffixOverrides=",">
+		  <if test="vendorId != null">vendorId=#{vendorId}</if>
+		  <if test="access_token != null">,access_token=#{access_token}</if>
+		  <if test="code != null">,code=#{code}</if>
+		  <if test="expires_in != null">,expires_in=#{expires_in}</if>
+		  <if test="refresh_token != null">,refresh_token=#{refresh_token}</if>
+		  <if test="time != null">,time=#{time}</if>
+		  <if test="token_type != null">,token_type=#{token_type}</if>
+		  <if test="uid != null">,uid=#{uid}</if>
+		  <if test="user_nick != null">,user_nick=#{user_nick}</if>
+		</trim>
+		where vendorId=#{vendorId}
+	</update>
+	
+	<select id="getJDVendorInfoByVendorId" parameterType="Integer" resultType="JDVendorInfo">
+		select * from tb_jd_coupon_vendor_info where vendorId=#{vendorId} limit 1
+	</select>
+	
+	<insert id="addJDCouponinfo" parameterType="JDCouponCreateInfo">
+		insert into tb_jd_coupon (
+			<if test="vendorId !=null">vendorId</if>
+			<if test="jdUid !=null">,jdUid</if>
+			<if test="couponId !=null">,couponId</if>
+			<if test="ip !=null">,ip</if>
+			<if test="port !=null">,port</if>
+			<if test="name !=null">,name</if>
+			<if test="type !=null">,type</if>
+			<if test="bindType !=null">,bindType</if>
+			<if test="grantType !=null">,grantType</if>
+			<if test="num !=null">,num</if>
+			<if test="discount !=null">,discount</if>
+			<if test="quota !=null">,quota</if>
+			<if test="validityType !=null">,validityType</if>
+			<if test="days !=null">,days</if>
+			<if test="beginTime !=null">,beginTime</if>
+			<if test="endTime !=null">,endTime</if>
+			<if test="member !=null">,member</if>
+			<if test="takeBeginTime !=null">,takeBeginTime</if>
+			<if test="takeEndTime !=null">,takeEndTime</if>
+			<if test="takeRule !=null">,takeRule</if>
+			<if test="takeNum !=null">,takeNum</if>
+			<if test="display !=null">,display</if>
+			<if test="platformType !=null">,platformType</if>
+			<if test="shareType !=null">,shareType</if>
+			<if test="skuId !=null">,skuId</if>
+			<if test="link !=null">,link</if>
+			<if test="activityLink !=null">,activityLink</if>
+		)value(
+			<if test="vendorId !=null">#{vendorId}</if>
+			<if test="jdUid !=null">,#{jdUid}</if>
+			<if test="couponId !=null">,#{couponId}</if>
+			<if test="ip !=null">,#{ip}</if>
+			<if test="port !=null">,#{port}</if>
+			<if test="name !=null">,#{name}</if>
+			<if test="type !=null">,#{type}</if>
+			<if test="bindType !=null">,#{bindType}</if>
+			<if test="grantType !=null">,#{grantType}</if>
+			<if test="num !=null">,#{num}</if>
+			<if test="discount !=null">,#{discount}</if>
+			<if test="quota !=null">,#{quota}</if>
+			<if test="validityType !=null">,#{validityType}</if>
+			<if test="days !=null">,#{days}</if>
+			<if test="beginTime !=null">,#{beginTime}</if>
+			<if test="endTime !=null">,#{endTime}</if>
+			<if test="member !=null">,#{member}</if>
+			<if test="takeBeginTime !=null">,#{takeBeginTime}</if>
+			<if test="takeEndTime !=null">,#{takeEndTime}</if>
+			<if test="takeRule !=null">,#{takeRule}</if>
+			<if test="takeNum !=null">,#{takeNum}</if>
+			<if test="display !=null">,#{display}</if>
+			<if test="platformType !=null">,#{platformType}</if>
+			<if test="shareType !=null">,#{shareType}</if>
+			<if test="skuId !=null">,#{skuId}</if>
+			<if test="link !=null">,#{link}</if>
+			<if test="activityLink !=null">,#{activityLink}</if>
+		)
+	</insert>
+	
+	<select id="getJDCouponList" parameterType="Integer" resultType="JDCouponCreateInfo">
+		select id,vendorId,jdUid,couponId,name,type,bindType,num,discount,quota,beginTime,endTime,
+		takeBeginTime,takeEndTime,takeRule,takeNum,shareType,skuId
+		from tb_jd_coupon where vendorId=#{vendorId} and status=1 order by id desc
+	</select>
+	
+	<select id="getJDVendorInfo" parameterType="Integer" resultType="JDVendorInfo">
+		select * from tb_jd_coupon_vendor_info where vendorId=#{vendorId}
+	</select>
+	
+	<select id="getCouponInfoByCouponId" parameterType="String" resultType="JDCouponCreateInfo">
+		select * from tb_jd_coupon where couponId=#{couponId}
+	</select>
+	
+	<select id="getJDCouponByVendorId" parameterType="Integer" resultType="JDCouponCreateInfo">
+		select * from tb_jd_coupon where vendorId=#{vendorId} and status=1
+		<![CDATA[
+		 and beginTime<=now() and now()<=endTime
+		]]>
+	</select>
+	
+	<select id="getJDCouponByVendorIdOther" parameterType="Integer" resultType="JDCouponCreateInfo">
+		select * from tb_jd_coupon where vendorId !=#{vendorId} and status=1
+		<![CDATA[
+		 and beginTime<=now() and now()<=endTime
+		]]>
+	</select>
+	
+	<update id="updateCouponInfoStatus" parameterType="String">
+		update tb_jd_coupon set status=0 where couponId=#{couponId}
+		
+	</update>
+	
+	<select id="getJDCouponInTime" resultType="JDCouponCreateInfo">
+		select * from tb_jd_coupon where vendorId=#{vendorId}
+		<![CDATA[
+		 and beginTime<=#{startTime} and #{endTime}<=endTime
+		]]>
+	</select>
+	
+</mapper>

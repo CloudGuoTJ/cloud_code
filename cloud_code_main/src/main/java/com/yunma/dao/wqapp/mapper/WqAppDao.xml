@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.wqapp.WqAppDao">
+
+	<insert id="addWqApp" parameterType="WqAppEntity">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		INSERT INTO tb_gzh_application (
+			<if test="vendorId != null">vendorId</if>
+			<if test="appName != null">,appName</if>
+			<if test="weChatUrl != null">,weChatUrl</if>
+			<if test="weqUrl != null">,weqUrl</if>
+			<if test="gzhId != null">,gzhId</if>
+			<if test="gzhUnionId != null">,gzhUnionId</if>
+			<if test="appImg != null">,appImg</if>
+			<if test="qrCodeUrl != null">,qrCodeUrl</if>
+			,createTime
+		) VALUE (
+			<if test="vendorId != null">#{vendorId}</if>
+			<if test="appName != null">,#{appName}</if>
+			<if test="weChatUrl != null">,#{weChatUrl}</if>
+			<if test="weqUrl != null">,#{weqUrl}</if>
+			<if test="gzhId != null">,#{gzhId}</if>
+			<if test="gzhUnionId != null">,#{gzhUnionId}</if>
+			<if test="appImg != null">,#{appImg}</if>
+			<if test="qrCodeUrl != null">,#{qrCodeUrl}</if>
+			,now()
+		)
+	</insert>
+	
+	<select id="getAppInfo" parameterType="Integer" resultType="WqAppEntity">
+		select * from tb_gzh_application where id = #{appId}
+	</select>
+	
+	<select id="getAllAppInfo" parameterType="Integer" resultType="WqAppEntity">
+		select * from tb_gzh_application where vendorId=#{vendorId}
+	</select>
+	
+	<select id="getAppInfoByName" parameterType="String" resultType="WqAppEntity">
+		select * from tb_gzh_application where appName=#{appName}
+	</select>
+	
+	<delete id="deleteApp" parameterType="Integer">
+		delete from tb_gzh_application where id=#{id}
+	</delete>
+	
+	<update id="updateAppinfo" parameterType="WqAppEntity">
+		update tb_gzh_application 
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="vendorId !=null">vendorId=#{vendorId}</if>
+			<if test="weChatUrl !=null">,weChatUrl=#{weChatUrl}</if>
+			<if test="weqUrl !=null">,weqUrl=#{weqUrl}</if>
+			<if test="gzhId !=null">,gzhId=#{gzhId}</if>
+			<if test="gzhUnionId !=null">,gzhUnionId=#{gzhUnionId}</if>
+			<if test="appImg !=null">,appImg=#{appImg}</if>
+			<if test="qrCodeUrl !=null">,qrCodeUrl=#{qrCodeUrl}</if>
+			,createTime=now()
+		</trim>
+		where appName=#{appName}
+	</update>
+</mapper>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.codemanager.ScannerPageDao">
+	<insert id="addCodeManager" parameterType="CodemanagerEntity">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		INSERT INTO tb_anti_fake_manager (
+			<if test="vendor_id != null">vendor_id</if>
+			<if test="orderId != null">,orderId</if>
+			<if test="anti_fake_name != null">,anti_fake_name</if>
+			<if test="startTime != null and startTime != ''">,start_time</if>
+			<if test="endTime != null and startTime != ''">,end_time</if>
+			<if test="mark != null">,mark</if>
+			<if test="modeId != null">,mode_id</if>
+			<if test="getRedEnv != null">,getRedEnv</if>
+			<if test="productInfo != null">,productInfo</if>
+			<if test="vendorHttp != null">,vendorHttp</if>
+			<if test="weShop != null">,weShop</if>
+			<if test="spree != null">,spree</if>
+			<if test="securityAndTraceability != null">,securityAndTraceability</if>
+			<if test="activity_status != null">,activity_status</if>
+			<if test="funcFlag != null">,funcFlag</if>
+			,delete_flag
+		) VALUE (
+			<if test="vendor_id != null">#{vendor_id}</if>
+			<if test="orderId != null">,#{orderId}</if>
+			<if test="anti_fake_name != null">,#{anti_fake_name}</if>
+			<if test="startTime != null and startTime != ''">,#{startTime}</if>
+			<if test="endTime != null and startTime != ''">,#{endTime}</if>
+			<if test="mark != null">,#{mark}</if>
+			<if test="modeId != null">,#{modeId}</if>
+			<if test="getRedEnv != null">,#{getRedEnv}</if>
+			<if test="productInfo != null">,#{productInfo}</if>
+			<if test="vendorHttp != null">,#{vendorHttp}</if>
+			<if test="weShop != null">,#{weShop}</if>
+			<if test="spree != null">,#{spree}</if>
+			<if test="securityAndTraceability != null">,#{securityAndTraceability}</if>
+			<if test="activity_status != null">,#{activity_status}</if>
+			<if test="funcFlag != null">,#{funcFlag}</if>
+			,0
+		)
+		
+	</insert>
+	
+	<update id="updateCodeManager" parameterType="CodemanagerEntity">
+		update tb_anti_fake_manager
+	 <trim prefix="SET" suffixOverrides=",">
+		  <if test="anti_fake_name != null">anti_fake_name=#{anti_fake_name},</if>
+		  <if test="startTime !=null and startTime !=''" >start_time=#{startTime},</if>
+		  <if test="endTime !=null  and startTime !=''">end_time=#{endTime},</if>
+		  <if test="orderId !=null">orderId=#{orderId},</if>
+		  <if test="mark !=null">mark=#{mark},</if>
+		  <if test="modeId !=null">mode_id=#{modeId},</if>
+		  <if test="activity_status !=null">activity_status=#{activity_status},</if>
+		  <if test="getRedEnv !=null">getRedEnv=#{getRedEnv},</if>
+		  <if test="productInfo !=null">productInfo=#{productInfo},</if>
+		  <if test="vendorHttp !=null">vendorHttp=#{vendorHttp},</if>
+		  <if test="weShop !=null">weShop=#{weShop},</if>
+		  <if test="spree !=null">spree=#{spree},</if>
+		  <if test="securityAndTraceability !=null">securityAndTraceability=#{securityAndTraceability},</if>
+		  <if test="funcFlag != null">funcFlag=#{funcFlag},</if>
+		  delete_flag=0 
+ 	 </trim>
+ 		  where id =#{id}
+		
+	</update>
+
+	<delete id="deleteCodeManager" parameterType="Integer">
+		 delete from `tb_anti_fake_manager` where id=#{id}
+	</delete>
+	
+	<select id="countScannerPage" parameterType="Integer" resultType="Integer">
+		select count(*) from tb_anti_fake_manager where vendor_id=#{vendorId} and delete_flag=0 and funcFlag=1;
+	</select>
+	
+	<select id="countScannerPageForTracy" parameterType="Integer" resultType="Integer">
+		select count(*) from tb_anti_fake_manager where vendor_id=#{vendorId} and delete_flag=0 and funcFlag=2;
+	</select>
+	
+	<select id="getCodeManagerAll" parameterType="map" resultType="CodeManagerVo">
+		select m.id id,m.vendor_id vendor_id,m.anti_fake_name anti_fake_name,
+		m.start_time start_time,m.end_time end_time,
+		m.orderId orderId,m.mark mark,m.mode_id mode_id,vi.urlName urlName,
+		m.activity_status activity_status,
+		m.getRedEnv getRedEnv,m.productInfo productInfo,
+		m.vendorHttp vendorHttp,m.weShop weShop,m.spree spree,
+		m.securityAndTraceability securityAndTraceability
+
+		from tb_anti_fake_manager m left join tb_vendor_activ_info vi on m.mode_id=vi.actionId
+		where m.vendor_id=#{vendorId} 
+		AND funcFlag=1
+		<if test="keyword != null">
+		AND (m.anti_fake_name like conCat(conCat('%',#{keyword}),'%'))
+		</if>
+		and delete_flag=0 ORDER BY m.id desc
+		<if test="pageBean.pageSize != 0">
+			LIMIT #{pageBean.index},#{pageBean.pageSize}
+		</if>
+		
+	</select>
+	
+	<select id="getCodeManagerAllForTracy" parameterType="map" resultType="CodeManagerVo">
+		select m.id id,m.vendor_id vendor_id,m.anti_fake_name anti_fake_name,
+		m.start_time start_time,m.end_time end_time,
+		m.orderId orderId,m.mark mark,m.mode_id mode_id,vi.urlName urlName,
+		m.activity_status activity_status,
+		m.getRedEnv getRedEnv,m.productInfo productInfo,
+		m.vendorHttp vendorHttp,m.weShop weShop,m.spree spree,
+		m.securityAndTraceability securityAndTraceability
+
+		from tb_anti_fake_manager m left join tb_vendor_activ_info vi on m.mode_id=vi.actionId
+		where m.vendor_id=#{vendorId} 
+		AND funcFlag=2
+		<if test="keyword != null">
+		AND (m.anti_fake_name like conCat(conCat('%',#{keyword}),'%'))
+		</if>
+		and delete_flag=0 ORDER BY m.id desc
+		<if test="pageBean.pageSize != 0">
+			LIMIT #{pageBean.index},#{pageBean.pageSize}
+		</if>
+		
+	</select>
+	
+	
+	<select id="getCodeManagerById" parameterType="Integer" resultType="CodeManagerVo">
+		select m.id id,m.vendor_id vendor_id,m.anti_fake_name anti_fake_name,   
+		m.start_time start_time,m.end_time end_time, 
+		  m.orderId orderId,m.mark mark,
+		  m.mode_id mode_id, vi.httpName, vi.urlName urlName,
+ 		m.activity_status activity_status,   
+ 		m.getRedEnv getRedEnv,m.productInfo productInfo,   
+ 		m.vendorHttp vendorHttp,m.weShop weShop,m.spree spree,
+ 		m.securityAndTraceability securityAndTraceability  
+		from  tb_anti_fake_manager m  
+		left join `tb_vendor_activ_info` vi on m.mode_id = vi.actionId
+		where m.id=#{id}
+		
+	</select>
+	
+	
+	<update id="updateScaPageStatus" parameterType="Integer">
+		 update tb_anti_fake_manager set activity_status=1
+	 	 where  id =#{id}
+	
+	</update>
+	
+	
+	<insert id="saveModeFunFile" parameterType="ModeFunctionFile">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into `tb_mode_function_file`
+		 	(
+		 	<if test="function_name !=null" >function_name</if>
+		 	<if test="file_url!=null"  >,file_url</if>
+		 	<if test="mark !=null and mark !=''"  >,mark</if>
+		 	) VALUE (
+			<if test="function_name !=null" >#{function_name}</if>
+		 	<if test="file_url!=null"  >,#{file_url}</if>
+		 	<if test="mark !=null and mark !=''"  >,#{mark}</if>
+		)
+	
+	</insert>
+	
+
+	<update id="updateModeStatus" parameterType="Integer">
+		update tb_vendor_activ_info set status=1 where actionId=#{modeId}
+	</update>
+	
+	<update id="updateModeStatus1" parameterType="Integer">
+		update tb_vendor_activ_info set status=0 where actionId=#{modeId}
+	</update>
+	
+	<update id="updateScaPageStatus1" parameterType="Integer">
+		update tb_anti_fake_manager set activity_status=0
+	 	 where id =#{id}
+	</update>
+
+</mapper>
+
+

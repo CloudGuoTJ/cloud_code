@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.collectWord.CollectWordDao">
+	<insert id="addCollectWordRule" parameterType="CollectWordRule">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into tb_collect_word_rule (
+			<if test="vendorId !=null">vendor_id</if>
+			<if test="name !=null">,name</if>
+			<if test="number !=null">,number</if>
+			,status
+			,createTime
+		)value(
+			<if test="vendorId !=null">#{vendorId}</if>
+			<if test="name !=null">,#{name}</if>
+			<if test="number !=null">,#{number}</if>
+			,1
+			,now()
+		)
+	</insert>
+	
+	<insert id="addCollectWordRuleItem" parameterType="CollectWordRuleItem">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into tb_collect_word_rule_item (
+			<if test="rule_id !=null">rule_id</if>
+			<if test="prize_name !=null">,prize_name</if>
+			<if test="prize_item !=null">,prize_item</if>
+			<if test="prize_is_sort !=null">,prize_is_sort</if>
+			<if test="prize_comment !=null">,prize_comment</if>
+		)value(
+			<if test="rule_id !=null">#{rule_id}</if>
+			<if test="prize_name !=null">,#{prize_name}</if>
+			<if test="prize_item !=null">,#{prize_item}</if>
+			<if test="prize_is_sort !=null">,#{prize_is_sort}</if>
+			<if test="prize_comment !=null">,#{prize_comment}</if>
+		)
+	</insert>
+	
+	<insert id="addCollectWordRuleRate" parameterType="CollectWordRate">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into tb_collect_word_rate (
+			<if test="word !=null">word</if>
+			<if test="rule_id !=null">,rule_id</if>
+			<if test="rule_item_id !=null">,rule_item_id</if>
+			<if test="word_rate !=null">,word_rate</if>
+		)value(
+			<if test="word !=null">#{word}</if>
+			<if test="rule_id !=null">,#{rule_id}</if>
+			<if test="rule_item_id !=null">,#{rule_item_id}</if>
+			<if test="word_rate !=null">,#{word_rate}</if>
+		)
+	</insert>
+	
+	<select id="getRuleList" parameterType="Integer" resultType="CollectWordRule">
+		SELECT id id,NAME name,vendor_id vendorId,createTime createTime FROM
+		 `tb_collect_word_rule` WHERE vendor_id=#{vendorId} and deleteFlag=0 order by id desc
+	</select>
+	
+	<select id="getWordsFromRate" parameterType="Integer" resultType="String">
+		select word from `tb_collect_word_rate` where rule_id=#{ruleId}
+	</select>
+	
+	<insert id="addCollectWordGame" parameterType="CollectWordGame">
+		insert into tb_collect_word_game(
+			<if test="rule_id !=null">rule_id</if>
+			<if test="order_id !=null">,order_id</if>
+			<if test="product_id !=null">,product_id</if>
+			,create_time
+			<if test="invalid_time !=null">,invalid_time</if>
+			<if test="vendor_id !=null">,vendor_id</if>
+			<if test="effect_time !=null">,effect_time</if>
+		)value(
+			<if test="rule_id !=null">#{rule_id}</if>
+			<if test="order_id !=null">,#{order_id}</if>
+			<if test="product_id !=null">,#{product_id}</if>
+			,now()
+			<if test="invalid_time !=null">,#{invalid_time}</if>
+			<if test="vendor_id !=null">,#{vendor_id}</if>
+			<if test="effect_time !=null">,#{effect_time}</if>
+		)
+	</insert>
+	
+	<select id="getCollectWordGameList" parameterType="Integer" resultType="CollectWordVo">
+		select g.id,g.rule_id,r.name,g.order_id,g.product_id,g.create_time,
+		g.invalid_time,g.vendor_id,g.effect_time from
+		 tb_collect_word_game g,tb_collect_word_rule r
+		  where g.rule_id=r.id and g.vendor_id=#{vendorId} order by id desc
+	</select>
+	
+	<select id="getRuleInfoById" parameterType="Integer" resultType="CollectWordRule">
+		select * from `tb_collect_word_rule` where id=#{id}
+	</select>
+	
+	<select id="getRateInfoByRuleId" parameterType="Integer" resultType="CollectWordRate">
+		select * from `tb_collect_word_rate` where rule_id=#{ruleId}
+	</select>
+	
+	<select id="getItemInfoByRuleId" parameterType="Integer" resultType="CollectWordRuleItem">
+		select * from `tb_collect_word_rule_item` where rule_id=#{ruleId}
+	</select>
+	
+	<update id="updateRuleInfoById" parameterType="CollectWordRule">
+		update tb_collect_word_rule
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="name != null">name=#{name}</if>
+			<if test="vendorId != null">,vendorId=#{vendorId}</if>
+			<if test="number != null">,number=#{number}</if>
+		</trim>
+		where id=#{id}
+	</update>
+	
+	<update id="updateRuleRateById" parameterType="CollectWordRate">
+		update tb_collect_word_rate
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="word != null">word=#{word}</if>
+			<if test="rule_id != null">,rule_id=#{rule_id}</if>
+			<if test="word_rate != null">,word_rate=#{word_rate}</if>
+		</trim>
+		where id=#{id}
+	</update>
+	
+	<update id="updateRuleItemById" parameterType="CollectWordRuleItem">
+		update tb_collect_word_rule_item
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="rule_id != null">rule_id=#{rule_id}</if>
+			<if test="prize_name != null">,prize_name=#{prize_name}</if>
+			<if test="prize_item != null">,prize_item=#{prize_item}</if>
+			<if test="prize_is_sort != null">,prize_is_sort=#{prize_is_sort}</if>
+			<if test="prize_comment != null">,prize_comment=#{prize_comment}</if>
+		</trim>
+	</update>
+	
+	<delete id="deleteRuleRateByRuleId" parameterType="Integer">
+		delete from tb_collect_word_rate where rule_id=#{ruleId}
+	</delete>
+	
+	<delete id="deleteRuleItemByRuleId" parameterType="Integer">
+		delete from tb_collect_word_rule_item where rule_id=#{ruleId}
+	</delete>
+	
+	<select id="getRuleItemById" parameterType="Integer" resultType="CollectWordRuleItem">
+		select * from tb_collect_word_rule_item where id=#{itemId}
+	</select>
+	
+	<update id="deleteRuleById" parameterType="Integer">
+		update tb_collect_word_rule
+		<trim prefix="SET" suffixOverrides=",">
+			deleteFlag=1
+			
+		</trim>
+		where id=#{id}
+	</update>
+	
+	<select id="getRuleNameByName" parameterType="String" resultType="String">
+		select name from tb_collect_word_rule where name=#{name}
+	</select>
+	
+	<select id="getWordAndRate" parameterType="Integer" resultType="CollectWordRate">
+		select id,word,word_rate,rule_id from `tb_collect_word_rate` where rule_id=(
+
+		select rule_id from `tb_collect_word_game` where order_id=#{orderOrProId} limit 1)
+	</select>
+	
+	<insert id="addUserGetWord" parameterType="UserGetedWord">
+		insert into tb_collect_word_get_word(
+			<if test="openId !=null">openId</if>
+			<if test="collectedWord !=null">,collectedWord</if>
+			<if test="orderId !=null">,orderId</if>
+			<if test="productId !=null">,productId</if>
+			<if test="vendorId !=null">,vendorId</if>
+		)value(
+			<if test="openId !=null">#{openId}</if>
+			<if test="collectedWord !=null">,#{collectedWord}</if>
+			<if test="orderId !=null">,#{orderId}</if>
+			<if test="productId !=null">,#{productId}</if>
+			<if test="vendorId !=null">,#{vendorId}</if>
+		)
+	
+	</insert>
+	
+	<select id="getUserCollectWords" resultType="UserGetedWord">
+		select * from tb_collect_word_get_word where openId=#{openId} and vendorId=#{vendorId}
+	</select>
+	
+	<select id="getRuleIdByOrderId" parameterType="Integer" resultType="Integer">
+		select rule_id from tb_collect_word_game where order_id=#{orderId}
+	</select>
+	
+	<insert id="addCollectWordWinner" parameterType="CollectWordWinner">
+		 INSERT INTO tb_collect_word_winner(
+		 	<if test="itemId !=null">itemId</if>
+		 	<if test="openId !=null">,openId</if>
+		 	<if test="winner !=null">,winner</if>
+		 	<if test="winnerTel !=null">,winnerTel</if>
+		 	<if test="area !=null">,area</if>
+		 	<if test="street !=null">,street</if>
+		 	<if test="detailAddress !=null">,detailAddress</if>
+		 	<if test="isDefault !=null">,isDefault</if>
+		 	<if test="createTime !=null">,createTime</if>
+		 	<if test="isDeliver !=null">,isDeliver</if>
+		 ) VALUE (
+			<if test="itemId !=null">#{itemId}</if>
+			<if test="openId !=null">,#{openId}</if>
+			<if test="winner !=null">,#{winner}</if>
+			<if test="winnerTel !=null">,#{winnerTel}</if>
+			<if test="area !=null">,#{area}</if>
+			<if test="street !=null">,#{street}</if>
+			<if test="detailAddress !=null">,#{detailAddress}</if>
+			<if test="isDefault !=null">,#{isDefault}</if>
+			,NOW(),1
+		)
+	</insert>
+	
+	<select id="getWinnerList" parameterType="Integer" resultType="CollectWordWinnerVo">
+		SELECT ri.prize_name,ri.prize_comment,w.itemId,w.openId,w.orderId,w.productId,
+		w.winner,w.winnerTel,w.address,w.createTime,
+		w.isDeliver,w.vendorId,u.nickName
+		
+		FROM `tb_collect_word_winner` w,
+		`tb_collect_word_rule_item` ri,
+		`tb_wx_user` u 
+		WHERE w.itemId=ri.id AND w.openId=u.openId AND w.vendorId=#{vendorId}
+	</select>
+	
+	<select id="isExistCurrentRule" parameterType="Integer" resultType="CollectWordRule">
+		select * from tb_collect_word_rule where vendor_id=#{vendorId}
+	</select>
+	
+	<select id="selectUserGetWordByShortCode" parameterType="String" resultType="UserGetedWord">
+		select * from tb_collect_word_get_word where shortCode=#{shortCode}
+	</select>
+</mapper>

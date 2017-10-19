@@ -1,0 +1,46 @@
+#hibernate.dialect=org.hibernate.dialect.OracleDialect
+#driverClassName=oracle.jdbc.driver.OracleDriver
+#validationQuery=SELECT 1 FROM DUAL
+#jdbc_url=jdbc:oracle:thin:@XXX.XXX.XXX:1521:orcl
+#jdbc_username=
+#jdbc_password=
+
+hibernate.dialect=org.hibernate.dialect.MySQLDialect
+driverClassName=com.mysql.jdbc.Driver
+validationQuery=SELECT 1
+
+###### userName
+jdbc_username=root
+
+
+###### mainServer
+jdbc_url=jdbc:mysql://120.77.154.187:3306/yunma?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+jdbc_password=12345678
+
+###### demoServer
+#jdbc_url=jdbc:mysql://120.77.149.115:3306/yunma?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+#jdbc_password=123456
+
+
+###### privateServer
+#jdbc_url=jdbc:mysql://127.0.0.1:3306/yunma?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+#jdbc_password=123456
+
+
+
+#jdbc_name=yunma
+#jdbc_name1=yunma
+
+
+hibernate.hbm2ddl.auto=update
+hibernate.show_sql=false
+hibernate.format_sql=true
+
+sessionInfoName=sessionInfo
+
+uploadFieldName=filedata
+uploadFileMaxSize=20971520
+uploadFileExts=txt,rar,zip,doc,docx,xls,xlsx,jpg,jpeg,gif,png,swf,wmv,avi,wma,mp3,mid
+uploadDirectory=attached
+
+memcached.server=120.77.154.187:11211

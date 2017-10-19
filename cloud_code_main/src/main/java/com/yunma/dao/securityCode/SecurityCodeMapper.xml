@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.securityCode.SecurityCodeDao">
+
+	<select id="getBasicInfo" parameterType="Integer" resultType="VendorBasicInfoVo">
+		SELECT u.vendor_id vendorId,u.vendor_name vendorName ,d.vendor_logo imgUrl,d.brand_name brandName,d.industry_name industryName,
+			d.contact_name contactName,d.custom_phone customPhone,d.vendor_weixin vendorWeixin,d.custom_tel customTel,
+			d.vendor_address vendorAddress,d.link link,d.official_accounts officialAccounts 
+		FROM tb_vendor_user u 
+		INNER JOIN tb_vendor_user_detail d 
+		ON u.vendor_id = d.vendor_id AND u.vendor_id=#{vendorId}
+	</select>
+	
+	<update id="updateSecurityCodeByVendorId" parameterType="SecurityCode">
+		UPDATE tb_security_code 
+		<set>
+			<if test="vendorName != null">
+				vendor_name = #{vendorName},
+			</if>
+			<if test="vendorPwd != null">
+				vendor_pwd = #{vendorPwd},
+			</if>
+			<if test="vendorTel != null">
+				vendor_tel = #{vendorTel},
+			</if>
+			<if test="vendorNickName != null">
+				vendor_nickName = #{vendorNickName},
+			</if>
+			<if test="rowId != null">
+				row_id = #{rowId},
+			</if>
+			<if test="vendorEmail != null">
+				vendor_email = #{vendorEmail},
+			</if>
+			<if test="loginTime != null">
+				login_time = #{loginTime},
+			</if>
+			<if test="accessToken != null">
+				access_token = #{accessToken},
+			</if>
+			<if test="findPwd != null">
+				find_pwd = #{findPwd},
+			</if>
+			<if test="mainHtmlComment != null">
+				mainHtml_comment = #{mainHtmlComment},
+			</if>
+			<if test="payPassword != null">
+				pay_password = #{payPassword}
+			</if>
+		</set> 
+			WHERE vendor_id = #{vendorId}
+	</update>
+	
+	<update id="updateVendorUserDetailByVendorId" parameterType="VendorUserDetail">
+		update tb_vendor_user_detail
+		<set>
+			<if test="brandName != null">
+				brand_name = #{brandName},
+			</if>
+			<if test="industryName != null">
+				industry_name = #{industryName},
+			</if>
+			<if test="contactName != null">
+				contact_name = #{contactName},
+			</if>
+			<if test="vendorLogo != null">
+				vendor_logo = #{vendorLogo},
+			</if>
+			<if test="vendorWeixin != null">
+				vendor_weixin = #{vendorWeixin},
+			</if>
+			<if test="customPhone != null">
+				custom_phone = #{customPhone},
+			</if>
+			<if test="customTel != null">
+				custom_tel = #{customTel},
+			</if>
+			<if test="vendorAddress != null">
+				vendor_address = #{vendorAddress},
+			</if>
+			<if test="link != null">
+				link = #{link},
+			</if>
+			<if test="officialAccounts != null">
+				official_accounts = #{officialAccounts}
+			</if>			
+		</set>
+		WHERE vendor_id = #{vendorId}
+	</update>
+	
+	<select id="getSecurityCodeByOrderId" parameterType="Integer" resultType="SecurityCode">
+		SELECT s.securityCodeId,s.orderId,s.productId,s.productName,s.codeFlag,s.codePrefix,s.securityCode,s.createDate,s.codeTailTag,s.createRowNum 
+		FROM tb_security_code_#{orderId} s 
+		LEFT JOIN tb_product_order o ON s.orderId=o.orderId AND o.orderId=#{orderId}
+	</select>
+</mapper>

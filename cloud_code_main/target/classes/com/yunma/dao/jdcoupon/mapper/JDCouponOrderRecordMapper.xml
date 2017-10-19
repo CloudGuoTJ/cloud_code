@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.jdcoupon.JDCouponOrderRecordDao">
+	
+	<insert id="addJDCouponOrderRecord" parameterType="JDCouponOrder">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into tb_jd_coupon_order_record (
+			<if test="vendorId !=null">vendorId</if>
+			<if test="orderId !=null">,orderId</if>
+			<if test="orderTotalPrice !=null">,orderTotalPrice</if>
+			<if test="orderSellerPrice !=null">,orderSellerPrice</if>
+			<if test="orderSource !=null">,orderSource</if>
+			<if test="couponPrice !=null">,couponPrice</if>
+			<if test="couponType !=null">,couponType</if>
+			<if test="orderStartTime !=null">,orderStartTime</if>
+			<if test="skuName !=null">,skuName</if>
+			<if test="jdPrice !=null">,jdPrice</if>
+		)value(
+			<if test="vendorId !=null">#{vendorId}</if>
+			<if test="orderId !=null">,#{orderId}</if>
+			<if test="orderTotalPrice !=null">,#{orderTotalPrice}</if>
+			<if test="orderSellerPrice !=null">,#{orderSellerPrice}</if>
+			<if test="orderSource !=null">,#{orderSource}</if>
+			<if test="couponPrice !=null">,#{couponPrice}</if>
+			<if test="couponType !=null">,#{couponType}</if>
+			<if test="orderStartTime !=null">,#{orderStartTime}</if>
+			<if test="skuName !=null">,#{skuName}</if>
+			<if test="jdPrice !=null">,#{jdPrice}</if>
+		)
+	</insert>
+	
+	<select id="getJDCouponOrderRecord" resultType="JDCouponOrder">
+		SELECT r.vendorId,orderId,orderTotalPrice,orderSellerPrice,orderSource,couponPrice,couponType,orderStartTime,
+		skuName,jdPrice,couponId,NAME FROM tb_jd_coupon_order_record r,tb_jd_coupon c
+		 WHERE r.vendorId=c.vendorId AND r.couponPrice=c.discount and r.vendorId=#{vendorId}
+		<![CDATA[
+		 and beginTime<=#{startTime} and #{endTime}<=endTime
+		]]>
+	</select>
+	
+</mapper>

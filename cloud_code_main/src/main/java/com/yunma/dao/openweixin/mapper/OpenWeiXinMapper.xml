@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD per 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunma.dao.openweixin.OpenWeiXinDao">
+
+	<update id="updateComponent_verify_ticketByAppid" parameterType="OpenWeiXinConfig">
+		UPDATE tb_wx_openweixin_config SET component_verify_ticket=#{componentVerifyTicket} WHERE open_weixin_appid = #{openWeixinAppid}
+	</update>
+	
+	<select id="getComponent_verify_ticketByAppid" parameterType="String" resultType="OpenWeiXinConfig">
+		SELECT open_weixin_appid openWeixinAppid,
+			   component_verify_ticket componentVerifyTicket,
+			   component_access_token componentAccessToken,
+			   component_access_token_time componentAccessTokenTime,
+			   pre_auth_code preAuthCode,
+			   pre_auth_code_time preAuthCodeTime,
+			   auth_code authCode,
+			   auth_code_time authCodeTime
+		FROM tb_wx_openweixin_config WHERE open_weixin_appid = #{0}
+	</select>
+	
+	<update id="updateComponentAccessToken" parameterType="OpenWeiXinConfig">
+		UPDATE tb_wx_openweixin_config SET component_access_token = #{componentAccessToken},component_access_token_time=now() WHERE open_weixin_appid = #{openWeixinAppid}
+	</update>
+	
+	<update id="updatePreAuthCode" parameterType="OpenWeiXinConfig">
+		UPDATE tb_wx_openweixin_config SET pre_auth_code = #{preAuthCode},pre_auth_code_time = now() WHERE open_weixin_appid = #{openWeixinAppid}
+	</update>
+	
+	<select id="hasAuthVendor" parameterType="integer" resultType="int">
+		SELECT count(*) FROM tb_wx_openweixin_vendor_auth WHERE vendor_id = #{vendorId}
+	</select>
+
+	<insert id="addAuthVendor" parameterType="integer">
+		INSERT INTO tb_wx_openweixin_vendor_auth(vendor_id,is_auth) VALUE(#{vendorId},1)
+	</insert>
+	
+	<select id="getAuthByVendorId" parameterType="integer" resultType="OpenWeiXinAuthVendor">
+		SELECT id,vendor_id vendorId,is_auth isAuth FROM tb_wx_openweixin_vendor_auth WHERE vendor_id = #{vendorId}
+	</select>
+	
+	<update id="updateCredentialsAddress">
+		UPDATE tb_wx_config SET certName = #{realPath} WHERE vendorId = #{vendorId}
+	</update>
+	
+	<update id="updateAuthCode" parameterType="OpenWeiXinConfig">
+		UPDATE tb_wx_openweixin_config SET auth_code = #{authCode},auth_code_time = now() WHERE open_weixin_appid = #{openWeixinAppid}
+	</update>
+	
+	<select id="hasAccount" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM tb_wx_openweixin_authorizer_account WHERE appid = #{appid}
+	</select>
+	
+	<insert id="addAccount" parameterType="OpenWeiXinAuthorizerAccount">
+		INSERT INTO tb_wx_openweixin_authorizer_account SET appid=#{appid},nick_name=#{nick_name},head_img=#{head_img},user_name=#{user_name},authorizer_refresh_token=#{authorizer_refresh_token},principal_name=#{principal_name},signature=#{signature},wxapp_audit_status=#{wxapp_audit_status},wxapp_audit_msg=#{wxapp_audit_msg}
+	</insert>
+	
+	<update id="updateAccount" parameterType="OpenWeiXinAuthorizerAccount">
+		UPDATE tb_wx_openweixin_authorizer_account 
+		SET wxapp_audit_status = #{wxapp_audit_status},wxapp_audit_msg = #{wxapp_audit_msg}
+		WHERE user_name = #{user_name}
+	</update>
+</mapper>
